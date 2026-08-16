@@ -36,6 +36,7 @@
             <input type="text" id="searchInput" placeholder="Search Teachers…" oninput="filterTeachers(this.value)">
 
             <span id="teacher-count" style="font-size:12px;color:var(--faint);white-space:nowrap">
+            
             </span>
 
         </div>
@@ -51,6 +52,8 @@
                         <th>#</th>
 
                         <th>Profile</th>
+
+                        <th>Enrollment ID</th>
 
                         <th>Name</th>
 
@@ -90,6 +93,9 @@
 
             </div>
 
+                  <div id="pagination" class="pagination"></div>
+
+
         </div>
 
     </div>
@@ -126,6 +132,16 @@
                     <input type="file" id="teacherProfile" class="form-control">
 
                 </div>
+
+                                {{-- Enrollment ID --}}
+                                <div class="form-group">
+    <label class="form-label">Enrollment ID</label>
+
+    <input type="text"
+           id="teacherEnrollmentId"
+           class="form-control"
+           placeholder="IAA2026T0005">
+</div>
 
                 <div class="form-group">
 
@@ -251,7 +267,38 @@
         let editingId = null;
         let deletingId = null;
 
+        let currentPage = 1;
+        const perPage = 5;
+
         const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+  
+        function generateEnrollmentId() {
+
+    const prefix = 'IAA2026T';
+
+    let maxNumber = 0;
+
+    teachers.forEach(teacher => {
+
+        if (!teacher.teacher_enrollment_id) return;
+
+        const match = teacher.teacher_enrollment_id.match(/IAA\d{4}T(\d+)/);
+
+        if (match) {
+
+            const num = parseInt(match[1]);
+
+            if (num > maxNumber) {
+                maxNumber = num;
+            }
+        }
+    });
+
+    const nextNumber = maxNumber + 1;
+
+    return prefix + String(nextNumber).padStart(4, '0');
+}
+
 
         function formatDate(str) {
 
@@ -272,10 +319,10 @@
             document.getElementById('teacher-count').textContent =
                 list.length + ' Teacher' + (list.length !== 1 ? 's' : '');
 
+
             if (!list.length) {
 
                 tbody.innerHTML = '';
-
                 empty.style.display = 'block';
 
                 return;
@@ -283,12 +330,23 @@
 
             empty.style.display = 'none';
 
-            tbody.innerHTML = list.map((teacher, i) => {
+            // Pagination
+            const totalPages = Math.ceil(list.length / perPage);
+
+            if (currentPage > totalPages)
+                currentPage = totalPages;
+
+            const start = (currentPage - 1) * perPage;
+            const pageData = list.slice(start, start + perPage);
+
+            tbody.innerHTML = pageData.map((teacher, i) => {
+
+                const active = teacher.is_active == 1;
 
                 return `
                 <tr>
 
-                    <td>${i + 1}</td>
+          <td>${start + i + 1}</td>
 <td>
     <img src="${
         (function() {
@@ -320,6 +378,7 @@
     onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('${escHtml(teacher.name)}')">
 </td>
 
+                <td>${escHtml(teacher.teacher_enrollment_id ?? '-')}</td>
                     <td>
                         <strong>${escHtml(teacher.name)}</strong>
                     </td>
@@ -365,10 +424,59 @@
             `;
 
             }).join('');
+             renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+
+            let html = '';
+
+            html += `
+            <button
+                ${currentPage == 1 ? 'disabled' : ''}
+                onclick="changePage(${currentPage - 1})">
+                Previous
+            </button>
+        `;
+
+            for (let i = 1; i <= totalPages; i++) {
+
+                html += `
+                <button
+                    class="${i == currentPage ? 'active' : ''}"
+                    onclick="changePage(${i})">
+                    ${i}
+                </button>
+            `;
+            }
+
+            html += `
+            <button
+                ${currentPage == totalPages ? 'disabled' : ''}
+                onclick="changePage(${currentPage + 1})">
+                Next
+            </button>
+        `;
+
+            document.getElementById('pagination').innerHTML = html;
+        }
+
+  function changePage(page) {
+
+            currentPage = page;
+
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            render(
+                teachers.filter(p =>
+                    p.name.toLowerCase().includes(search)
+                )
+            );
         }
 
         function filterTeachers(q) {
-
+    currentPage = 1;
+    
             const lower = q.toLowerCase();
 
             render(
@@ -386,6 +494,9 @@
             document.getElementById('modalTitle').textContent = 'New Teacher';
 
             clearForm();
+                   document.getElementById('teacherEnrollmentId').value =
+        generateEnrollmentId();
+
 
             document.getElementById('formModal').classList.add('open');
         }
@@ -400,6 +511,9 @@
 
             document.getElementById('modalTitle').textContent = 'Edit Teacher';
 
+    document.getElementById('teacherEnrollmentId').value =
+    teacher.teacher_enrollment_id ?? '';
+
             document.getElementById('teacherName').value = teacher.name ?? '';
             document.getElementById('teacherEmail').value = teacher.email ?? '';
 
@@ -411,6 +525,7 @@
         function clearForm() {
 
             document.getElementById('teacherProfile').value = '';
+                document.getElementById('teacherEnrollmentId').value = '';
             document.getElementById('teacherName').value = '';
             document.getElementById('teacherEmail').value = '';
             document.getElementById('teacherPassword').value = '';
@@ -432,6 +547,10 @@
         async function saveTeacher() {
 
             const formData = new FormData();
+                formData.append(
+    'teacher_enrollment_id',
+    document.getElementById('teacherEnrollmentId').value
+);
 
             formData.append('name', document.getElementById('teacherName').value);
             formData.append('email', document.getElementById('teacherEmail').value);

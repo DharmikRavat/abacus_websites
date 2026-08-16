@@ -664,30 +664,24 @@ function handleDeleteBackdropClick(e) {
 async function confirmDelete() {
 
     const res = await fetch(`/admin/manage-tests/${deletingId}`, {
-
         method: 'DELETE',
-
         headers: {
-
             'X-CSRF-TOKEN': CSRF,
             'Accept': 'application/json'
-
         }
-
     });
 
     const data = await res.json();
 
+    console.log(data);
+
     if (!res.ok) {
-
-        alert(data.message ?? 'Delete failed');
-
+        alert(data.message || 'Delete failed');
         return;
     }
 
     location.reload();
 }
-
 /* =====================================================
    CLOSE MODAL
 ===================================================== */
@@ -742,20 +736,20 @@ document.querySelectorAll('input[name="test_type"]')
 
             typeSelect.innerHTML = this.value === 'test'
                 ? `
-                    <option value="Weekly Test">
+                    <option value="weekly_test">
                         Weekly Test
                     </option>
 
-                    <option value="Monthly Test">
+                    <option value="monthly_test">
                         Monthly Test
                     </option>
                   `
                 : `
-                    <option value="Olympiad">
+                    <option value="olympiad">
                         Olympiad
                     </option>
 
-                    <option value="Final Exam">
+                    <option value="final_exam">
                         Final Exam
                     </option>
                   `;

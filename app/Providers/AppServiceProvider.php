@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\AboutUs;
 use App\Models\AcademyProgram;
 use App\Models\Center;
+use App\Models\FranchisePage;
 use App\Models\Gallery;
 use App\Models\Setting;
 use App\Models\Sliders;
@@ -54,9 +55,15 @@ class AppServiceProvider extends ServiceProvider
         $academyPrograms = AcademyProgram::where('is_active', '1')
             ->get();
             View::share('academyPrograms', $academyPrograms);
+            
         // About us 
         $about = AboutUs::first();
         View::share('about', $about);
+
+
+        $franchise = FranchisePage::first();
+        View::share('franchise', $franchise);
+        
         
     }
 }

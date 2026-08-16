@@ -13,7 +13,7 @@
         <div class="hero-slider owl-carousel">
 
             @foreach($sliders as $slider)
-                @if($slider->status == 1)
+                @if($slider->is_active  == 1)
                     <div class="single-slider" style="background-image: url('{{ asset('uploads/sliders/' . $slider->image) }}')">
 
                     </div>

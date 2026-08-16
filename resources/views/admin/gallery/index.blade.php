@@ -74,6 +74,7 @@
             <p>No gallery items found</p>
 
         </div>
+        <div id="pagination" class="pagination"></div>
 
     </div>
 
@@ -120,6 +121,7 @@
 
                     <option value="1">Image</option>
                     <option value="2">YouTube Video</option>
+                    <option value="3">Local Video</option>
 
                 </select>
 
@@ -136,6 +138,18 @@
                        accept="image/*">
 
             </div>
+            <div class="form-group"
+     id="videoField"
+     style="display:none">
+
+    <label class="form-label">Video File</label>
+
+    <input type="file"
+           id="videoFile"
+           class="form-control"
+           accept="video/*">
+
+</div>
 
             <div class="form-group"
                  id="youtubeField"
@@ -266,8 +280,53 @@ let galleries = @json($galleries);
 let editingId  = null;
 let deletingId = null;
 
-const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+let currentPage = 1;
+const perPage = 5;
 
+const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+function renderPagination(totalPages) {
+
+    let html = '';
+
+    html += `
+        <button
+            ${currentPage == 1 ? 'disabled' : ''}
+            onclick="changePage(${currentPage - 1})">
+            Previous
+        </button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+
+        html += `
+            <button
+                class="${i == currentPage ? 'active' : ''}"
+                onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    html += `
+        <button
+            ${currentPage == totalPages ? 'disabled' : ''}
+            onclick="changePage(${currentPage + 1})">
+            Next
+        </button>
+    `;
+
+    document.getElementById('pagination').innerHTML = html;
+}
+
+function changePage(page) {
+
+    currentPage = page;
+
+    filterGallery(
+        document.getElementById('searchInput').value,
+        false
+    );
+}
 // ─────────────────────────────────────
 // Render
 // ─────────────────────────────────────
@@ -279,40 +338,52 @@ function render(list) {
 
     document.getElementById('gallery-count').textContent =
         list.length + ' Items';
+if (!list.length) {
 
-    if (!list.length) {
+    tbody.innerHTML = '';
 
-        tbody.innerHTML = '';
+    empty.style.display = 'block';
 
-        empty.style.display = 'block';
+    document.getElementById('pagination').innerHTML = '';
 
-        return;
-    }
+    return;
+}
 
-    empty.style.display = 'none';
+empty.style.display = 'none';
 
-    tbody.innerHTML = list.map((gallery, i) => {
+const totalPages = Math.ceil(list.length / perPage);
 
+if (currentPage > totalPages)
+    currentPage = totalPages;
+
+const start = (currentPage - 1) * perPage;
+
+const pageData = list.slice(start, start + perPage);
+
+tbody.innerHTML = pageData.map((gallery, i) => {
         return `
         <tr>
 
-            <td>${i + 1}</td>
+          <td>${start + i + 1}</td>
 
             <td>
 
                 ${
-                    gallery.media_type == 1
-                    ?
-                    `<img src="/uploads/gallery/${gallery.media}"
-                          width="80"
-                          height="60"
-                          style="object-fit:cover;border-radius:8px">`
-                    :
-                    `<a href="${gallery.youtube_link}"
-                        target="_blank">
-                        YouTube Video
-                    </a>`
-                }
+    gallery.media_type == 1
+    ? `<img src="/uploads/gallery/${gallery.media}"
+            width="80"
+            height="60"
+            style="object-fit:cover;border-radius:8px">`
+
+    : gallery.media_type == 2
+    ? `<a href="${gallery.youtube_link}" target="_blank">
+            YouTube Video
+       </a>`
+
+    : `<video width="80" height="60" controls>
+            <source src="/uploads/gallery/videos/${gallery.video_file}" type="video/mp4">
+       </video>`
+}
 
             </td>
 
@@ -342,7 +413,18 @@ function render(list) {
                     <button class="btn-icon"
                             onclick="openEditModal(${gallery.id})">
 
-                        ✏️
+                           <svg width="13"
+                     height="13"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+
+                </svg>
 
                     </button>
 
@@ -350,7 +432,24 @@ function render(list) {
                             style="color:red"
                             onclick="openDeleteModal(${gallery.id})">
 
-                        🗑️
+                        <svg width="13"
+                     height="13"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <polyline points="3 6 5 6 21 6"/>
+
+                    <path d="M19 6l-1 14H6L5 6"/>
+
+                    <path d="M10 11v6"/>
+
+                    <path d="M14 11v6"/>
+
+                    <path d="M9 6V4h6v2"/>
+
+                </svg>
 
                     </button>
 
@@ -362,12 +461,17 @@ function render(list) {
         `;
 
     }).join('');
+    renderPagination(totalPages);
 }
 
 // ─────────────────────────────────────
 // Search
 // ─────────────────────────────────────
-function filterGallery(q) {
+function filterGallery(q, reset = true) {
+
+    if (reset) {
+        currentPage = 1;
+    }
 
     q = q.toLowerCase();
 
@@ -377,7 +481,6 @@ function filterGallery(q) {
         )
     );
 }
-
 // ─────────────────────────────────────
 // Toggle Media Fields
 // ─────────────────────────────────────
@@ -390,6 +493,9 @@ function toggleMediaFields() {
 
     document.getElementById('youtubeField').style.display =
         type == 2 ? 'block' : 'none';
+
+    document.getElementById('videoField').style.display =
+        type == 3 ? 'block' : 'none';
 }
 
 // ─────────────────────────────────────
@@ -482,10 +588,15 @@ async function saveGallery() {
 
     const media =
         document.getElementById('galleryMedia').files[0];
+    const video =
+    document.getElementById('videoFile').files[0];
 
     if (media) {
         formData.append('media', media);
     }
+    if (video) {
+    formData.append('video_file', video);
+}
 
     if (editingId) {
         formData.append('_method', 'PUT');

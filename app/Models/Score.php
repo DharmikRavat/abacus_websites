@@ -19,7 +19,14 @@ class Score extends Model
         'correct',
         'wrong',
         'skipped',
-        'time'
+        'time',
+        'exam_level',
+        'exam_mode',
+        'exam_selfie',
+        'latitude',
+        'longitude',
+        'schedule_test_type',
+        
     ];
 
     public function user()
@@ -35,7 +42,7 @@ class Score extends Model
         });
     }
     public function customer()
-{
-    return $this->belongsTo(Customer::class, 'user_id');
-}
+    {
+        return $this->belongsTo(Customer::class, 'user_id', 'id');
+    }
 }

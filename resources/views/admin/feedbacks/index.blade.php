@@ -72,6 +72,7 @@
             <p>No feedbacks found</p>
 
         </div>
+        <div id="pagination" class="pagination"></div>
 
     </div>
 </div>
@@ -256,6 +257,9 @@ let feedbacks = @json($feedbacks);
 let editingId  = null;
 let deletingId = null;
 
+let currentPage = 1;
+const perPage = 5;
+
 const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
 function formatDate(str) {
@@ -267,6 +271,55 @@ function formatDate(str) {
         day: 'numeric',
         year: 'numeric'
     });
+}
+function renderPagination(totalPages) {
+
+    let html = '';
+
+    html += `
+        <button
+            ${currentPage == 1 ? 'disabled' : ''}
+            onclick="changePage(${currentPage - 1})">
+            Previous
+        </button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+
+        html += `
+            <button
+                class="${i == currentPage ? 'active' : ''}"
+                onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    html += `
+        <button
+            ${currentPage == totalPages ? 'disabled' : ''}
+            onclick="changePage(${currentPage + 1})">
+            Next
+        </button>
+    `;
+
+    document.getElementById('pagination').innerHTML = html;
+}
+
+function changePage(page) {
+
+    currentPage = page;
+
+    const search = document
+        .getElementById('searchInput')
+        .value
+        .toLowerCase();
+
+    render(
+        feedbacks.filter(f =>
+            f.message.toLowerCase().includes(search)
+        )
+    );
 }
 
 // ─────────────────────────────────────
@@ -280,25 +333,35 @@ function render(list) {
     document.getElementById('feedback-count').textContent =
         list.length + ' Feedback' + (list.length !== 1 ? 's' : '');
 
-    if (!list.length) {
+   if (!list.length) {
 
         tbody.innerHTML = '';
 
         empty.style.display = 'block';
+
+        document.getElementById('pagination').innerHTML = '';
 
         return;
     }
 
     empty.style.display = 'none';
 
-    tbody.innerHTML = list.map((feedback, i) => {
+    const totalPages = Math.ceil(list.length / perPage);
+
+    if (currentPage > totalPages)
+        currentPage = totalPages;
+
+    const start = (currentPage - 1) * perPage;
+
+    const pageData = list.slice(start, start + perPage);
+
+    tbody.innerHTML = pageData.map((feedback, i) => {
 
         const active = feedback.status == 1;
 
         return `
         <tr>
-
-            <td>${i + 1}</td>
+    <td>${start + i + 1}</td>
 
             <td>${feedback.user_id}</td>
 
@@ -367,6 +430,7 @@ function render(list) {
         `;
 
     }).join('');
+        renderPagination(totalPages);
 }
 
 // ─────────────────────────────────────
@@ -374,11 +438,13 @@ function render(list) {
 // ─────────────────────────────────────
 function filterFeedbacks(q) {
 
-    const lower = q.toLowerCase();
+    currentPage = 1;
+
+    q = q.toLowerCase();
 
     render(
         feedbacks.filter(f =>
-            f.message.toLowerCase().includes(lower)
+            f.message.toLowerCase().includes(q)
         )
     );
 }
@@ -512,6 +578,8 @@ async function saveFeedback() {
         } else {
 
             feedbacks.unshift(data.feedback);
+
+currentPage = 1;
         }
 
         render(feedbacks);
@@ -620,7 +688,11 @@ async function confirmDelete() {
 
         feedbacks = feedbacks.filter(f => f.id !== deletingId);
 
-        render(feedbacks);
+        const totalPages = Math.ceil(feedbacks.length / perPage);
+
+if (currentPage > totalPages) {
+    currentPage = totalPages || 1;
+}
 
         closeDeleteModal();
 

@@ -36,7 +36,31 @@
         @if(!in_array(Auth::user()->role, ['teacher', 'student']))
             <div class="nav-section">
                 <div class="nav-label">Content Management</div>
+                <!-- Global Presence -->
+<div class="nav-item {{ request()->routeIs('admin.global-presences.*') ? 'active' : '' }}"
+     onclick="window.location='{{ route('admin.global-presences.index') }}'"
+     style="cursor: pointer;">
 
+    <svg viewBox="0 0 24 24">
+        <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 2c1.8 0 3.4.5 4.8 1.4H7.2A7.96 7.96 0 0112 4zm-6 8c0-.7.1-1.4.3-2h11.4c.2.6.3 1.3.3 2s-.1 1.4-.3 2H6.3c-.2-.6-.3-1.3-.3-2zm1.2 4h9.6A7.96 7.96 0 0112 20a7.96 7.96 0 01-4.8-1.6zm10.6-10.6A7.96 7.96 0 0120 12c0 2.1-.8 4-2.2 5.4A15.5 15.5 0 0018.5 12c0-2-.3-3.9-.7-5.6zM6.2 6.6A15.5 15.5 0 005.5 12c0 2 .3 3.9.7 5.4A7.96 7.96 0 014 12c0-2.1.8-4 2.2-5.4z"/>
+    </svg>
+
+    Global Presence
+</div>
+
+<!-- Statistics -->
+<div class="nav-item {{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}"
+     onclick="window.location='{{ route('admin.statistics.index') }}'"
+     style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24">
+        <path d="M3 13h4v8H3v-8z"/>
+        <path d="M10 9h4v12h-4V9z"/>
+        <path d="M17 5h4v16h-4V5z"/>
+    </svg>
+
+    Statistics
+</div>
                 <!-- Academy Programs -->
                 <div class="nav-item {{ request()->routeIs('admin.academy-programs.*') ? 'active' : '' }}"
                     onclick="window.location='{{ route('admin.academy-programs.index') }}'" style="cursor: pointer;">
@@ -46,7 +70,36 @@
                     </svg>
                     Academy Programs
                 </div>
+<!-- Program Writeup -->
+<div class="nav-item {{ request()->routeIs('admin.program-writeup.*') ? 'active' : '' }}"
+    onclick="window.location='{{ route('admin.program-writeup.index') }}'"
+    style="cursor: pointer;">
 
+    <svg viewBox="0 0 24 24">
+        <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
+        <path d="M8 8h8"/>
+        <path d="M8 12h8"/>
+        <path d="M8 16h5"/>
+    </svg>
+
+    Program Writeup
+
+</div>
+<!-- Franchise Page -->
+<div class="nav-item {{ request()->routeIs('admin.franchise-page.*') ? 'active' : '' }}"
+    onclick="window.location='{{ route('admin.franchise-page.index') }}'"
+    style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24">
+        <path d="M4 4h16v16H4z"/>
+        <path d="M8 8h8"/>
+        <path d="M8 12h8"/>
+        <path d="M8 16h5"/>
+    </svg>
+
+    Franchise Page
+
+</div>
                 <!-- FAQ's -->
                 <div class="nav-item {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}"
                     onclick="window.location='{{ route('admin.faqs.index') }}'" style="cursor: pointer;">
@@ -121,6 +174,51 @@
             </div>
         @endif
 
+@if(!in_array(Auth::user()->role, ['teacher', 'student']))
+    <!-- Admission Details Section -->
+    <div class="nav-section">
+        <div class="nav-label">Admission Details</div>
+
+     <!-- Students Admission -->
+<div class="nav-item {{ request()->routeIs('admin.student-fees.*') ? 'active' : '' }}"
+    onclick="window.location='{{ route('admin.student-fees.index') }}'"
+    style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24">
+        <path d="M12 12a5 5 0 100-10 5 5 0 000 10z" />
+        <path d="M4 22a8 8 0 0116 0" />
+    </svg>
+
+    Students Admission
+</div>
+
+     <!-- Teachers Admission -->
+<div class="nav-item {{ request()->routeIs('admin.teacher-fees.*') ? 'active' : '' }}"
+    onclick="window.location='{{ route('admin.teacher-fees.index') }}'"
+    style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24">
+        <path d="M12 12a5 5 0 100-10 5 5 0 000 10z" />
+        <path d="M4 22a8 8 0 0116 0" />
+    </svg>
+
+    Teacher Admission
+</div>
+
+<!-- Student Lead -->
+<div class="nav-item {{ request()->routeIs('admin.student-leads.*') ? 'active' : '' }}"
+    onclick="window.location='{{ route('admin.student-leads.index') }}'"
+    style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24">
+        <path d="M12 12a5 5 0 100-10 5 5 0 000 10z" />
+        <path d="M4 22a8 8 0 0116 0" />
+    </svg>
+
+    Student Lead
+</div>
+    </div>
+@endif
         <!-- Academic Section -->
         <div class="nav-section">
             <div class="nav-label">Academics</div>
@@ -418,6 +516,20 @@
                     Roles &amp; Permissions
                 </div> --}}
 
+<div class="nav-item {{ request()->routeIs('admin.activity-log.*') ? 'active' : '' }}"
+    onclick="window.location='{{ route('admin.activity-log.index') }}'"
+    style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v4"></path>
+        <path d="M12 12v4"></path>
+        <circle cx="12" cy="12" r="8"></circle>
+        <path d="M12 8v4l3 2"></path>
+    </svg>
+
+    Login Logs
+</div>
                 <div class="nav-item {{ request()->routeIs('admin.report.*') ? 'active' : '' }}"
                     onclick="window.location='{{ route('admin.report.index') }}'" style="cursor: pointer;">
 

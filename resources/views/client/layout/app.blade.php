@@ -40,6 +40,53 @@
     @yield('style')
 
     <style>
+    .floating-whatsapp {
+    position: fixed;
+    width: 65px;
+    height: 65px;
+    bottom: 25px;
+    right: 25px;
+    background: #25D366;
+    color: #fff !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    text-decoration: none;
+    z-index: 99999;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    transition: all 0.4s ease;
+    animation: whatsappPulse 2s infinite;
+}
+
+.floating-whatsapp:hover {
+    transform: scale(1.12);
+    color: #fff !important;
+    background: #1ebe5d;
+}
+
+@keyframes whatsappPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37,211,102,0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 18px rgba(37,211,102,0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37,211,102,0);
+    }
+}
+
+@media (max-width: 768px) {
+    .floating-whatsapp {
+        width: 58px;
+        height: 58px;
+        font-size: 30px;
+        right: 20px;
+        bottom: 90px;
+    }
+}
         /* LOGIN BUTTON */
 .login-btn{
     background: #1F3971;
@@ -226,6 +273,19 @@
         }
     </script>
     @yield('script')
+    @php
+    $whatsappMessage = urlencode('Hello India Abacus Academy, I would like to enquire about a demo class. Please share the details and available timings.');
+    $whatsappNumber = preg_replace('/[^0-9]/', '', $settings->company_mobile ?? '');
+@endphp
+
+<!-- Floating WhatsApp Button -->
+<a href="https://wa.me/{{ $whatsappNumber }}?text={{ $whatsappMessage }}"
+   class="floating-whatsapp"
+   target="_blank">
+
+    <i class="fab fa-whatsapp"></i>
+
+</a>
 </body>
 
 </html>

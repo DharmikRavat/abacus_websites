@@ -42,5 +42,14 @@ class Setting extends Model
         'timezone',
         'currency',
         'date_format',
+        "gmail_url",
+
+"instagram_url",
+
+"whatsapp_url",
+
+"facebook_url",
+
+"youtube_url"
     ];
 }

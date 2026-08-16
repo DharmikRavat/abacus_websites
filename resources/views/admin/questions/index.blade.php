@@ -139,19 +139,16 @@
                     </select>
                 </div>
 
-                <div class="col-md-3 form-group">
-                    <label class="form-label">Difficulty</label>
+               <div class="col-md-3 form-group" id="difficultyContainer">
+    <label class="form-label">Difficulty</label>
 
-                    <select id="difficulty" class="form-control">
-
-                        <option value="">Select Difficulty</option>
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-
-                    </select>
-                </div>
-
+    <select id="difficulty" class="form-control">
+        <option value="">Select Difficulty</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+    </select>
+</div>
                 <div class="col-md-3 form-group">
                     <label class="form-label">Level</label>
 
@@ -287,6 +284,87 @@ let deletingId = null;
 
 const CSRF =
 document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+const questionTypeSelect = document.getElementById('questionType');
+
+questionTypeSelect.addEventListener('change', function () {
+
+    const selectedText =
+        this.options[this.selectedIndex].text.trim().toLowerCase();
+
+    const container =
+        document.getElementById('difficultyContainer');
+
+    if (selectedText === 'test') {
+
+        container.innerHTML = `
+            <label class="form-label">Test Type</label>
+
+            <select id="difficulty" class="form-control">
+
+                <option value="">Select Test Type</option>
+
+                <option value="weekly_test">
+                    Weekly Test
+                </option>
+
+                <option value="monthly_test">
+                    Monthly Test
+                </option>
+
+            </select>
+        `;
+
+    } 
+    else if (selectedText === 'exam') {
+
+        container.innerHTML = `
+            <label class="form-label">Exam Type</label>
+
+            <select id="difficulty" class="form-control">
+
+                <option value="">Select Exam Type</option>
+
+                <option value="final_exam">
+                    Final Exam
+                </option>
+
+                <option value="olympiad_exam">
+                    Olympiad Exam
+                </option>
+
+            </select>
+        `;
+
+    } 
+    
+    else {
+
+        container.innerHTML = `
+            <label class="form-label">Difficulty</label>
+
+            <select id="difficulty" class="form-control">
+
+                <option value="">Select Difficulty</option>
+
+                <option value="easy">
+                    Easy
+                </option>
+
+                <option value="medium">
+                    Medium
+                </option>
+
+                <option value="hard">
+                    Hard
+                </option>
+
+            </select>
+        `;
+    }
+
+});
+
 
 /* =====================================================
    FETCH QUESTIONS

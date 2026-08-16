@@ -45,7 +45,7 @@ class TeacherController extends Controller
             'status'      => 'nullable|boolean',
 
             'fcm_id'      => 'nullable|string',
-
+            'teacher_enrollment_id' => 'nullable|string|max:50',
         ]);
 
         $profile = null;
@@ -88,7 +88,10 @@ class TeacherController extends Controller
 
             'fcm_id'          => $request->fcm_id,
 
+
             'role'            => 'teacher',
+
+            'teacher_enrollment_id' => $request->teacher_enrollment_id,
 
         ]);
 
@@ -139,6 +142,8 @@ class TeacherController extends Controller
 
             'fcm_id'      => 'nullable|string',
 
+            'teacher_enrollment_id' => 'nullable|string|max:50',
+
         ]);
   /*
     |--------------------------------------------------------------------------
@@ -181,6 +186,7 @@ class TeacherController extends Controller
             'status'      => $request->status ?? 1,
 
             'fcm_id'      => $request->fcm_id,
+            'teacher_enrollment_id' => $request->teacher_enrollment_id,
 
         ]);
 

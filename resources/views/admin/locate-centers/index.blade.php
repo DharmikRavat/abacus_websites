@@ -118,7 +118,7 @@
             <span>Try different search or add a center</span>
 
         </div>
-
+  <div id="pagination" class="pagination"></div>
     </div>
 
 </div>
@@ -348,6 +348,10 @@ let centers = @json($centers);
 let editingId  = null;
 let deletingId = null;
 
+
+let currentPage = 1;
+const perPage = 5;
+
 const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
 function formatDate(str) {
@@ -362,7 +366,56 @@ function formatDate(str) {
 
     });
 }
+function renderPagination(totalPages) {
 
+    let html = '';
+
+    html += `
+        <button
+            ${currentPage == 1 ? 'disabled' : ''}
+            onclick="changePage(${currentPage - 1})">
+            Previous
+        </button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+
+        html += `
+            <button
+                class="${i == currentPage ? 'active' : ''}"
+                onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    html += `
+        <button
+            ${currentPage == totalPages ? 'disabled' : ''}
+            onclick="changePage(${currentPage + 1})">
+            Next
+        </button>
+    `;
+
+    document.getElementById('pagination').innerHTML = html;
+}
+
+function changePage(page) {
+
+    currentPage = page;
+
+    const lower = document.getElementById('searchInput').value.toLowerCase();
+
+    render(
+        centers.filter(c =>
+            (c.center_name ?? '').toLowerCase().includes(lower) ||
+            (c.country_name ?? '').toLowerCase().includes(lower) ||
+            (c.state_name ?? '').toLowerCase().includes(lower) ||
+            (c.district_name ?? '').toLowerCase().includes(lower) ||
+            (c.assigned_teacher_name ?? '').toLowerCase().includes(lower)
+        )
+    );
+}
 function render(list) {
 
     const tbody = document.getElementById('centerBody');
@@ -377,17 +430,29 @@ function render(list) {
 
         empty.style.display = 'block';
 
+        document.getElementById('pagination').innerHTML = '';
+
         return;
     }
 
     empty.style.display = 'none';
 
-    tbody.innerHTML = list.map((center, i) => {
+    const totalPages = Math.ceil(list.length / perPage);
+
+    if (currentPage > totalPages)
+        currentPage = totalPages;
+
+    const start = (currentPage - 1) * perPage;
+
+    const pageData = list.slice(start, start + perPage);
+
+    tbody.innerHTML = pageData.map((center, i) => {
+
+        const active = center.status == 1;
 
         return `
-            <tr>
-
-                <td>${i + 1}</td>
+        <tr>
+    <td>${start + i + 1}</td>
 
                 <td>
                     <strong>${escHtml(center.center_name)}</strong>
@@ -433,21 +498,24 @@ function render(list) {
         `;
 
     }).join('');
+      renderPagination(totalPages);
 }
-
 function filterCenters(q) {
+
+    currentPage = 1;
 
     const lower = q.toLowerCase();
 
     render(
         centers.filter(c =>
-            c.center_name.toLowerCase().includes(lower) ||
+            (c.center_name ?? '').toLowerCase().includes(lower) ||
+            (c.country_name ?? '').toLowerCase().includes(lower) ||
             (c.state_name ?? '').toLowerCase().includes(lower) ||
-            (c.district_name ?? '').toLowerCase().includes(lower)
+            (c.district_name ?? '').toLowerCase().includes(lower) ||
+            (c.assigned_teacher_name ?? '').toLowerCase().includes(lower)
         )
     );
 }
-
 function openCreateModal() {
 
     editingId = null;

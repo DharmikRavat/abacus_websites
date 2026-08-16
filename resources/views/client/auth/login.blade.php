@@ -53,6 +53,8 @@
                             @endif
                             <form action="{{ url('/login') }}" method="POST">
                                 @csrf
+                                <input type="hidden" name="latitude" id="latitude">
+<input type="hidden" name="longitude" id="longitude">
                                 <!-- EMAIL -->
                                 <div class="form-fild">
                                     <p>
@@ -124,5 +126,13 @@ function togglePassword() {
     }
 }
 
+window.onload = function () {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(function (position) {
+        document.getElementById('latitude').value = position.coords.latitude;
+        document.getElementById('longitude').value = position.coords.longitude;
+    });
+};
 </script>
 @endsection

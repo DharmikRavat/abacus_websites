@@ -4,96 +4,82 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Certification;
+use App\Models\Customer;
+use App\Models\StudentCertification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CertificationController extends Controller
 {
     /**
-     * Display listing
+     * Display Listing
      */
     public function index()
     {
-        $certifications = Certification::latest()->get();
+        $certificates = StudentCertification::with('student')->latest()->get();
+        $students = Customer::where('role', 'student')
+        ->where('isActive', 1)
+        ->get();
 
-        return view('admin.certification.index', compact('certifications'));
+        return view('admin.certification.index', compact('certificates','students'));
     }
 
     /**
-     * Store Certification
+     * Store Certificate
      */
     public function store(Request $request)
     {
         $validator = validator($request->all(), [
-
-            'trainer_name'     => 'nullable|string|max:255',
-            'certificate_date' => 'nullable|date',
-            'level'             => 'nullable|string|max:255',
-
-            'student_name'     => 'required|string|max:255',
-            'parents_name'     => 'nullable|string|max:255',
-            'mobile_no'        => 'nullable|string|max:20',
-            'exam_date'        => 'nullable|date',
-
-            'score'            => 'nullable|numeric',
-            'result'           => 'nullable|string|max:255',
-
-            'address'          => 'nullable|string',
-            'receiver_contact' => 'nullable|string|max:20',
-
-            'address_image'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'certificate_image'=> 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-
-            'dispatch_date'    => 'nullable|date',
-            'dispatch_id'      => 'nullable|string|max:255',
-
-            'received_date'    => 'nullable|date',
-            'remark'           => 'nullable|string',
-
-            'download_type'    => 'nullable|string|max:50',
-
+            'title'                 => 'required|string|max:255',
+            'student_enrollment_id' => 'required|string|max:100',
+            'file'                  => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
-
-        // Validation Error
+    
         if ($validator->fails()) {
-
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
                 'errors'  => $validator->errors()
             ], 422);
         }
-
+    
         try {
-
-            $data = $request->all();
-
-            // Upload Address Image
-            if ($request->hasFile('address_image')) {
-
-                $data['address_image'] = $request
-                    ->file('address_image')
-                    ->store('certifications/address', 'public');
+    
+            $path = null;
+    
+            if ($request->hasFile('file')) {
+    
+                $file = $request->file('file');
+    
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+    
+                $destination = public_path('student-certificates');
+    
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+    
+                $file->move($destination, $fileName);
+    
+                $path = 'student-certificates/' . $fileName;
             }
-
-            // Upload Certificate Image
-            if ($request->hasFile('certificate_image')) {
-
-                $data['certificate_image'] = $request
-                    ->file('certificate_image')
-                    ->store('certifications/certificate', 'public');
-            }
-
-            $certification = Certification::create($data);
-
-            return response()->json([
-                'success'       => true,
-                'message'       => 'Certification created successfully.',
-                'certification' => $certification
+    
+            $certificate = StudentCertification::create([
+                'certificate_unique_id' => 'CERT' . date('YmdHis') . rand(100, 999),
+                'title'                 => $request->title,
+                'file'                  => $path,
+                'student_enrollment_id' => $request->student_enrollment_id,
+                'added_by'              => auth()->id(),
             ]);
-
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Certificate uploaded successfully.',
+                'data'    => $certificate
+            ]);
+    
         } catch (\Exception $e) {
-
+    
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -102,39 +88,16 @@ class CertificationController extends Controller
     }
 
     /**
-     * Show Single
-     */
-    public function showCertificate($id)
-    {
-        $certification = Certification::findOrFail($id);
-    
-        return view(
-            'admin.certification.view',
-            compact('certification')
-        );
-    }
-
-    /**
      * Edit
      */
     public function edit($id)
     {
-        try {
+        $certificate = StudentCertification::findOrFail($id);
 
-            $certification = Certification::findOrFail($id);
-
-            return response()->json([
-                'success'       => true,
-                'certification' => $certification
-            ]);
-
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Certification not found'
-            ], 404);
-        }
+        return response()->json([
+            'success' => true,
+            'data'    => $certificate
+        ]);
     }
 
     /**
@@ -143,98 +106,82 @@ class CertificationController extends Controller
     public function update(Request $request, $id)
     {
         $validator = validator($request->all(), [
-
-            'trainer_name'     => 'nullable|string|max:255',
-            'certificate_date' => 'nullable|date',
-            'level'             => 'nullable|string|max:255',
-
-            'student_name'     => 'required|string|max:255',
-            'parents_name'     => 'nullable|string|max:255',
-            'mobile_no'        => 'nullable|string|max:20',
-            'exam_date'        => 'nullable|date',
-
-            'score'            => 'nullable|numeric',
-            'result'           => 'nullable|string|max:255',
-
-            'address'          => 'nullable|string',
-            'receiver_contact' => 'nullable|string|max:20',
-
-            'address_image'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'certificate_image'=> 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-
-            'dispatch_date'    => 'nullable|date',
-            'dispatch_id'      => 'nullable|string|max:255',
-
-            'received_date'    => 'nullable|date',
-            'remark'           => 'nullable|string',
-
-            'download_type'    => 'nullable|string|max:50',
-
+            'title'                 => 'required|string|max:255',
+            'student_enrollment_id' => 'required|string|max:100',
+            'file'                  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
-
-        // Validation Error
+    
         if ($validator->fails()) {
-
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
                 'errors'  => $validator->errors()
             ], 422);
         }
-
+    
         try {
-
-            $certification = Certification::findOrFail($id);
-
-            $data = $request->all();
-
-            // Update Address Image
-            if ($request->hasFile('address_image')) {
-
-                // Delete old image
-                if ($certification->address_image &&
-                    Storage::disk('public')->exists($certification->address_image)) {
-
-                    Storage::disk('public')
-                        ->delete($certification->address_image);
+    
+            $certificate = StudentCertification::findOrFail($id);
+    
+            $data = [
+                'title'                 => $request->title,
+                'student_enrollment_id' => $request->student_enrollment_id,
+            ];
+    
+            if ($request->hasFile('file')) {
+    
+                if ($certificate->file && file_exists(public_path($certificate->file))) {
+                    unlink(public_path($certificate->file));
                 }
-
-                $data['address_image'] = $request
-                    ->file('address_image')
-                    ->store('certifications/address', 'public');
-            }
-
-            // Update Certificate Image
-            if ($request->hasFile('certificate_image')) {
-
-                // Delete old image
-                if ($certification->certificate_image &&
-                    Storage::disk('public')->exists($certification->certificate_image)) {
-
-                    Storage::disk('public')
-                        ->delete($certification->certificate_image);
+    
+                $file = $request->file('file');
+    
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+    
+                $destination = public_path('student-certificates');
+    
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
                 }
-
-                $data['certificate_image'] = $request
-                    ->file('certificate_image')
-                    ->store('certifications/certificate', 'public');
+    
+                $file->move($destination, $fileName);
+    
+                $data['file'] = 'student-certificates/' . $fileName;
             }
-
-            $certification->update($data);
-
+    
+            $certificate->update($data);
+    
             return response()->json([
-                'success'       => true,
-                'message'       => 'Certification updated successfully.',
-                'certification' => $certification
+                'success' => true,
+                'message' => 'Certificate updated successfully.',
+                'data'    => $certificate
             ]);
-
+    
         } catch (\Exception $e) {
-
+    
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+    /**
+     * Download Certificate
+     */
+    public function download($id)
+    {
+        $certificate = StudentCertification::findOrFail($id);
+    
+        $filePath = public_path($certificate->file);
+    
+        if (!file_exists($filePath)) {
+            abort(404, 'Certificate not found.');
+        }
+    
+        return response()->download(
+            $filePath,
+            $certificate->title . '.' . pathinfo($certificate->file, PATHINFO_EXTENSION)
+        );
     }
 
     /**
@@ -243,37 +190,25 @@ class CertificationController extends Controller
     public function destroy($id)
     {
         try {
-
-            $certification = Certification::findOrFail($id);
-
-            // Delete Address Image
-            if ($certification->address_image &&
-                Storage::disk('public')->exists($certification->address_image)) {
-
-                Storage::disk('public')
-                    ->delete($certification->address_image);
+    
+            $certificate = StudentCertification::findOrFail($id);
+    
+            if ($certificate->file && file_exists(public_path($certificate->file))) {
+                unlink(public_path($certificate->file));
             }
-
-            // Delete Certificate Image
-            if ($certification->certificate_image &&
-                Storage::disk('public')->exists($certification->certificate_image)) {
-
-                Storage::disk('public')
-                    ->delete($certification->certificate_image);
-            }
-
-            $certification->delete();
-
+    
+            $certificate->delete();
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Certification deleted successfully.'
+                'message' => 'Certificate deleted successfully.'
             ]);
-
+    
         } catch (\Exception $e) {
-
+    
             return response()->json([
                 'success' => false,
-                'message' => 'Delete failed'
+                'message' => $e->getMessage()
             ], 500);
         }
     }

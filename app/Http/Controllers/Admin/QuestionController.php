@@ -59,6 +59,7 @@ class QuestionController extends Controller
             'question_type_id'            => 'required|exists:question_types,id',
             'exam_level'                  => 'required',
             'difficulty'                  => 'required|in:easy,medium,hard',
+            'schedule_test_type'          => 'nullable|string',
 
             'questions'                   => 'required|array|min:1',
 
@@ -80,6 +81,7 @@ class QuestionController extends Controller
                 'difficulty'       => $request->difficulty,
                 'options'          => $q['options'],
                 'correct_option'   => $q['correct_option'],
+                'schedule_test_type' => $request->schedule_test_type
             ]);
         }
 
@@ -114,6 +116,7 @@ class QuestionController extends Controller
             'correct_option'    => 'required|string',
             'exam_level'        => 'nullable|string',
             'difficulty'        => 'nullable|string',
+            
         ]);
 
         $question = Question::findOrFail($id);

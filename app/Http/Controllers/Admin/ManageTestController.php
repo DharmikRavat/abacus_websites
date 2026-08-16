@@ -95,11 +95,21 @@ class ManageTestController extends Controller
     /* =========================
        DELETE SCHEDULE
     ========================== */
-    public function destroy(TestSchedule $testSchedule)
+    public function destroy($id)
     {
-        $testSchedule->delete();
-
+        $schedule = TestSchedule::find($id);
+    
+        if (!$schedule) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Schedule not found'
+            ], 404);
+        }
+    
+        $schedule->delete();
+    
         return response()->json([
+            'success' => true,
             'message' => 'Schedule deleted successfully'
         ]);
     }

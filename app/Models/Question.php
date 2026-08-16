@@ -19,6 +19,7 @@ class Question extends Model
         'correct_option',
         'exam_level',
         'difficulty',
+        'schedule_test_type'
     ];
 
     /**

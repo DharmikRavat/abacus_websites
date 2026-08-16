@@ -78,6 +78,8 @@
 
                     <th>Profile</th>
 
+                    <th>Enrollment ID</th>
+
                     <th>Name</th>
 
                     <th>Email</th>
@@ -122,6 +124,8 @@
             <span>Try different search or add a student</span>
 
         </div>
+          <div id="pagination" class="pagination"></div>
+
 
     </div>
 
@@ -164,15 +168,38 @@
             <div class="form-grid">
 
                 {{-- Profile --}}
-                <div class="form-group">
+<div class="form-group">
 
-                    <label class="form-label">Profile</label>
+    <label class="form-label">Profile</label>
 
-                    <input type="file"
-                           id="studentProfile"
-                           class="form-control">
+    <div style="margin-bottom:10px">
+        <img id="studentProfilePreview"
+             src=""
+             alt="Profile"
+             style="
+                width:80px;
+                height:80px;
+                border-radius:50%;
+                object-fit:cover;
+                display:none;
+             ">
+    </div>
 
-                </div>
+    <input type="file"
+           id="studentProfile"
+           class="form-control"
+           onchange="previewStudentProfile(this)">
+
+</div>
+                {{-- Enrollment ID --}}
+                                <div class="form-group">
+    <label class="form-label">Enrollment ID</label>
+
+    <input type="text"
+           id="studentEnrollmentId"
+           class="form-control"
+           placeholder="IAA2026S0005">
+</div>
 
                 {{-- Name --}}
                 <div class="form-group">
@@ -185,6 +212,8 @@
                            placeholder="Enter student name">
 
                 </div>
+
+
 
                 {{-- Email --}}
                 <div class="form-group">
@@ -549,7 +578,49 @@ let students = @json($students);
 let editingId  = null;
 let deletingId = null;
 
+        let currentPage = 1;
+        const perPage = 5;
+
+
 const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+function previewStudentProfile(input) {
+
+    const preview = document.getElementById('studentProfilePreview');
+
+    if (input.files && input.files[0]) {
+
+        preview.src = URL.createObjectURL(input.files[0]);
+        preview.style.display = 'block';
+    }
+}
+
+function generateEnrollmentId() {
+
+    const prefix = 'IAA2026S';
+
+    let maxNumber = 0;
+
+    students.forEach(student => {
+
+        if (!student.student_enrollment_id) return;
+
+        const match = student.student_enrollment_id.match(/IAA\d{4}S(\d+)/);
+
+        if (match) {
+
+            const num = parseInt(match[1]);
+
+            if (num > maxNumber) {
+                maxNumber = num;
+            }
+        }
+    });
+
+    const nextNumber = maxNumber + 1;
+
+    return prefix + String(nextNumber).padStart(4, '0');
+}
 
 function formatDate(str) {
 
@@ -570,23 +641,34 @@ function render(list) {
     document.getElementById('student-count').textContent =
         list.length + ' Student' + (list.length !== 1 ? 's' : '');
 
-    if (!list.length) {
 
-        tbody.innerHTML = '';
+            if (!list.length) {
 
-        empty.style.display = 'block';
+                tbody.innerHTML = '';
+                empty.style.display = 'block';
 
-        return;
-    }
+                return;
+            }
 
-    empty.style.display = 'none';
+            empty.style.display = 'none';
 
-    tbody.innerHTML = list.map((student, i) => {
+            // Pagination
+            const totalPages = Math.ceil(list.length / perPage);
 
-        return `
+            if (currentPage > totalPages)
+                currentPage = totalPages;
+
+            const start = (currentPage - 1) * perPage;
+            const pageData = list.slice(start, start + perPage);
+
+            tbody.innerHTML = pageData.map((student, i) => {
+
+                const active = student.is_active == 1;
+
+                return `
             <tr>
 
-                <td>${i + 1}</td>
+       <td>${start + i + 1}</td>
 
 
                 <td>
@@ -623,6 +705,8 @@ function render(list) {
 
                 </td>
 
+                <td>${escHtml(student.student_enrollment_id ?? '-')}</td>
+
                 <td>
                     <strong>${escHtml(student.name)}</strong>
                 </td>
@@ -648,15 +732,42 @@ function render(list) {
                         <button class="btn-icon"
                                 onclick="openEditModal(${student.id})">
 
-                            ✏️
+                           <svg width="13"
+                     height="13"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+
+                </svg>
 
                         </button>
 
                         <button class="btn-icon"
                                 style="color:red"
                                 onclick="openDeleteModal(${student.id})">
+   <svg width="13"
+                     height="13"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
 
-                            🗑️
+                    <polyline points="3 6 5 6 21 6"/>
+
+                    <path d="M19 6l-1 14H6L5 6"/>
+
+                    <path d="M10 11v6"/>
+
+                    <path d="M14 11v6"/>
+
+                    <path d="M9 6V4h6v2"/>
+
+                </svg>
 
                         </button>
 
@@ -668,9 +779,59 @@ function render(list) {
         `;
 
     }).join('');
+     renderPagination(totalPages);
 }
 
+
+        function renderPagination(totalPages) {
+
+            let html = '';
+
+            html += `
+            <button
+                ${currentPage == 1 ? 'disabled' : ''}
+                onclick="changePage(${currentPage - 1})">
+                Previous
+            </button>
+        `;
+
+            for (let i = 1; i <= totalPages; i++) {
+
+                html += `
+                <button
+                    class="${i == currentPage ? 'active' : ''}"
+                    onclick="changePage(${i})">
+                    ${i}
+                </button>
+            `;
+            }
+
+            html += `
+            <button
+                ${currentPage == totalPages ? 'disabled' : ''}
+                onclick="changePage(${currentPage + 1})">
+                Next
+            </button>
+        `;
+
+            document.getElementById('pagination').innerHTML = html;
+        }
+
+  function changePage(page) {
+
+            currentPage = page;
+
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            render(
+                programs.filter(p =>
+                    p.name.toLowerCase().includes(search)
+                )
+            );
+        }
 function filterStudents(q) {
+    currentPage = 1;
+    
 
     const lower = q.toLowerCase();
 
@@ -690,6 +851,9 @@ function openCreateModal() {
 
     clearForm();
 
+        document.getElementById('studentEnrollmentId').value =
+        generateEnrollmentId();
+
     document.getElementById('formModal').classList.add('open');
 }
 
@@ -702,6 +866,9 @@ function openEditModal(id) {
     editingId = id;
 
     document.getElementById('modalTitle').textContent = 'Edit Student';
+
+    document.getElementById('studentEnrollmentId').value =
+    student.student_enrollment_id ?? '';
 
     document.getElementById('studentName').value = student.name ?? '';
     document.getElementById('studentEmail').value = student.email ?? '';
@@ -725,6 +892,63 @@ function openEditModal(id) {
 
     document.getElementById('studentCenterId').value = student.center_id ?? '';
     document.getElementById('studentAddedBy').value = student.added_by ?? '';
+  const preview = document.getElementById('studentProfilePreview');
+
+if (student.profile) {
+
+    let imageUrl = (function() {
+
+        if (!student.profile) {
+            return 'https://ui-avatars.com/api/?name=' +
+                encodeURIComponent(student.name);
+        }
+
+        // Already absolute URL
+        if (
+            student.profile.startsWith('http://') ||
+            student.profile.startsWith('https://')
+        ) {
+
+            if (!student.profile.includes('/storage/')) {
+
+                const parts = student.profile.split('students/');
+                const filename = parts[parts.length - 1];
+
+                return `${window.location.origin}/storage/students/${filename}`;
+            }
+
+            return student.profile;
+        }
+
+        // Relative path stored in DB
+        const cleanPath = student.profile
+            .replace(/^\/+/, '')
+            .replace(/^storage\//, '');
+
+        return `${window.location.origin}/storage/${cleanPath}`;
+
+    })();
+
+    preview.src = imageUrl;
+    preview.style.display = 'block';
+
+    preview.onerror = function () {
+
+        this.src =
+            'https://ui-avatars.com/api/?name=' +
+            encodeURIComponent(student.name);
+    };
+
+} else {
+
+    preview.src =
+        'https://ui-avatars.com/api/?name=' +
+        encodeURIComponent(student.name);
+
+    preview.style.display = 'block';
+}
+
+console.log('Final Preview URL:', preview.src);
 
     document.getElementById('studentStatus').checked = student.isActive == 1;
     document.getElementById('studentPremium').checked = student.is_premium == 1;
@@ -737,6 +961,12 @@ function openEditModal(id) {
 function clearForm() {
 
     document.getElementById('studentProfile').value = '';
+document.getElementById('studentProfile').value = '';
+
+const preview = document.getElementById('studentProfilePreview');
+preview.src = '';
+preview.style.display = 'none';
+    document.getElementById('studentEnrollmentId').value = '';
 
     document.getElementById('studentName').value = '';
     document.getElementById('studentEmail').value = '';
@@ -784,6 +1014,11 @@ function handleBackdropClick(e) {
 async function saveStudent() {
 
     const formData = new FormData();
+
+    formData.append(
+    'student_enrollment_id',
+    document.getElementById('studentEnrollmentId').value
+);
 
     formData.append('name', document.getElementById('studentName').value);
     formData.append('email', document.getElementById('studentEmail').value);

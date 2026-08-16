@@ -14,6 +14,7 @@ class Gallery extends Model
         'title',
         'media_type',
         'media',
+        'video_file',
         'youtube_link',
         'is_active',
         'is_dashboard',

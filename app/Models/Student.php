@@ -48,6 +48,7 @@ class Student extends Model
         'subscription'      => 'boolean',
         'password',
         'api_token',
+        'student_enrollment_id'
     ];
 
 

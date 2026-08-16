@@ -27,13 +27,15 @@ class GalleryController extends Controller
         $request->validate([
             'title'         => 'nullable|string|max:255',
             'media_type'    => 'required|integer',
-            'media'         => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'media'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'video_file' => 'nullable|mimes:mp4,mov,avi,webm,mkv|max:102400',
             'youtube_link'  => 'nullable|string',
             'is_active'     => 'required|boolean',
             'is_dashboard'  => 'required|boolean',
         ]);
 
         $mediaName = null;
+        $videoName = null;
 
         if ($request->hasFile('media')) {
 
@@ -44,10 +46,20 @@ class GalleryController extends Controller
             $file->move(public_path('uploads/gallery'), $mediaName);
         }
 
+        if ($request->hasFile('video_file')) {
+
+            $file = $request->file('video_file');
+        
+            $videoName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+        
+            $file->move(public_path('uploads/gallery/videos'), $videoName);
+        }
+
         $gallery = Gallery::create([
             'title'         => $request->title,
             'media_type'    => $request->media_type,
             'media'         => $mediaName,
+            'video_file'    => $videoName,
             'youtube_link'  => $request->youtube_link,
             'is_active'     => $request->is_active,
             'is_dashboard'  => $request->is_dashboard,
@@ -81,7 +93,8 @@ class GalleryController extends Controller
         $request->validate([
             'title'         => 'nullable|string|max:255',
             'media_type'    => 'required|integer',
-            'media'         => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'media'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'video_file' => 'nullable|mimes:mp4,mov,avi,webm,mkv|max:102400',
             'youtube_link'  => 'nullable|string',
             'is_active'     => 'required|boolean',
             'is_dashboard'  => 'required|boolean',
@@ -90,6 +103,7 @@ class GalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
 
         $mediaName = $gallery->media;
+        $videoName = $gallery->video_file;
 
         if ($request->hasFile('media')) {
 
@@ -105,11 +119,26 @@ class GalleryController extends Controller
 
             $file->move(public_path('uploads/gallery'), $mediaName);
         }
+        // Video Upload
+if ($request->hasFile('video_file')) {
+
+    if ($gallery->video_file && file_exists(public_path('uploads/gallery/videos/'.$gallery->video_file))) {
+        unlink(public_path('uploads/gallery/videos/'.$gallery->video_file));
+    }
+
+    $file = $request->file('video_file');
+
+    $videoName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+
+    $file->move(public_path('uploads/gallery/videos'), $videoName);
+}
+
 
         $gallery->update([
             'title'         => $request->title,
             'media_type'    => $request->media_type,
             'media'         => $mediaName,
+            'video_file'    => $videoName,
             'youtube_link'  => $request->youtube_link,
             'is_active'     => $request->is_active,
             'is_dashboard'  => $request->is_dashboard,

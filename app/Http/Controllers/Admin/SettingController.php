@@ -64,6 +64,14 @@ class SettingController extends Controller
             'timezone' => 'nullable|string',
             'currency' => 'nullable|string',
             'date_format' => 'nullable|string',
+            "instagram_url" => 'nullable|string',
+
+"whatsapp_url" => 'nullable|string',
+
+"gmail_url" => 'nullable|string',
+
+"youtube_url" => 'nullable|string',
+"facebook_url" => 'nullable|string',
         ]);
 
         $data = $request->except('company_logo');

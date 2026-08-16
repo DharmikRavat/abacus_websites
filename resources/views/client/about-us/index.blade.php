@@ -6,6 +6,7 @@
     </style>
 
 @endsection
+
 @section('content')
     <!--Breadcrumb Banner Area Start-->
     <div class="breadcrumb-banner-area">

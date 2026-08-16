@@ -25,7 +25,7 @@ class SliderImageController extends Controller
     {
         $request->validate([
             'image'  => 'required|image|mimes:jpg,jpeg,png,webp',
-            'status' => 'required|boolean',
+            'is_active ' => 'required|boolean',
         ]);
 
         $imageName = null;
@@ -41,7 +41,7 @@ class SliderImageController extends Controller
 
         $slider = Sliders::create([
             'image'  => $imageName,
-            'status' => $request->status,
+            'is_active ' => $request->is_active ,
         ]);
 
         return response()->json([
@@ -71,7 +71,7 @@ class SliderImageController extends Controller
     {
         $request->validate([
             'image'  => 'nullable|image|mimes:jpg,jpeg,png,webp',
-            'status' => 'required|boolean',
+            'is_active ' => 'required|boolean',
         ]);
 
         $slider = Sliders::findOrFail($id);
@@ -97,7 +97,7 @@ class SliderImageController extends Controller
 
         $slider->update([
             'image'  => $imageName,
-            'status' => $request->status,
+            'is_active ' => $request->is_active ,
         ]);
 
         return response()->json([

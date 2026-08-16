@@ -279,7 +279,62 @@
         </div>
     </div>
 
+{{-- ================= SOCIAL MEDIA URLS ================= --}}
+<div class="form-section">
+    <div class="section-header">
+        <h3>Social Media URLs</h3>
+        <p>Manage your website and social media profile links</p>
+    </div>
 
+    <div class="form-grid">
+
+        <div class="form-group">
+            <label class="form-label">Facebook URL</label>
+            <input type="url"
+                   name="facebook_url"
+                   class="form-control"
+                   placeholder="https://facebook.com/yourpage"
+                   value="{{ $settings->facebook_url ?? '' }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Instagram URL</label>
+            <input type="url"
+                   name="instagram_url"
+                   class="form-control"
+                   placeholder="https://instagram.com/yourprofile"
+                   value="{{ $settings->instagram_url ?? '' }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">YouTube URL</label>
+            <input type="url"
+                   name="youtube_url"
+                   class="form-control"
+                   placeholder="https://youtube.com/@yourchannel"
+                   value="{{ $settings->youtube_url ?? '' }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">WhatsApp URL</label>
+            <input type="url"
+                   name="whatsapp_url"
+                   class="form-control"
+                   placeholder="https://wa.me/919876543210"
+                   value="{{ $settings->whatsapp_url ?? '' }}">
+        </div>
+
+        <div class="form-group full">
+            <label class="form-label">Gmail / Contact Email</label>
+            <input type="email"
+                   name="gmail_url"
+                   class="form-control"
+                   placeholder="contact@example.com"
+                   value="{{ $settings->gmail_url ?? '' }}">
+        </div>
+
+    </div>
+</div>
 
 
 

@@ -72,7 +72,7 @@
             <p>No sliders found</p>
 
         </div>
-
+<div id="pagination" class="pagination"></div>
     </div>
 </div>
 
@@ -220,7 +220,50 @@ let sliders = @json($sliders);
 let editingId  = null;
 let deletingId = null;
 
+let currentPage = 1;
+const perPage = 5;
+
 const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+function renderPagination(totalPages) {
+
+    let html = '';
+
+    html += `
+        <button
+            ${currentPage == 1 ? 'disabled' : ''}
+            onclick="changePage(${currentPage - 1})">
+            Previous
+        </button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+
+        html += `
+            <button
+                class="${i == currentPage ? 'active' : ''}"
+                onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    html += `
+        <button
+            ${currentPage == totalPages ? 'disabled' : ''}
+            onclick="changePage(${currentPage + 1})">
+            Next
+        </button>
+    `;
+
+    document.getElementById('pagination').innerHTML = html;
+}
+
+function changePage(page) {
+
+    currentPage = page;
+
+    filterSliders(document.getElementById('searchInput').value);
+}
 
 function formatDate(str) {
 
@@ -246,25 +289,36 @@ function render(list) {
     document.getElementById('slider-count').textContent =
         list.length + ' Slider' + (list.length !== 1 ? 's' : '');
 
-    if (!list.length) {
+if (!list.length) {
 
-        tbody.innerHTML = '';
+    tbody.innerHTML = '';
 
-        empty.style.display = 'block';
+    empty.style.display = 'block';
 
-        return;
-    }
+    document.getElementById('pagination').innerHTML = '';
 
-    empty.style.display = 'none';
+    return;
+}
 
-    tbody.innerHTML = list.map((slider, i) => {
+empty.style.display = 'none';
 
-        const active = slider.status == 1;
+const totalPages = Math.ceil(list.length / perPage);
+
+if (currentPage > totalPages)
+    currentPage = totalPages;
+
+const start = (currentPage - 1) * perPage;
+
+const pageData = list.slice(start, start + perPage);
+
+tbody.innerHTML = pageData.map((slider, i) => {
+
+        const active = slider.is_active  == 1;
 
         return `
         <tr>
 
-            <td>${i + 1}</td>
+        <td>${start + i + 1}</td>
 
             <td>
 
@@ -331,6 +385,7 @@ function render(list) {
         `;
 
     }).join('');
+    renderPagination(totalPages);
 }
 
 // ─────────────────────────────────────
@@ -338,7 +393,15 @@ function render(list) {
 // ─────────────────────────────────────
 function filterSliders(q) {
 
-    render(sliders);
+    currentPage = 1;
+
+    q = q.toLowerCase();
+
+    render(
+        sliders.filter(s =>
+            (s.image ?? '').toLowerCase().includes(q)
+        )
+    );
 }
 
 // ─────────────────────────────────────
@@ -374,7 +437,7 @@ function openEditModal(id) {
         'Edit Slider';
 
     document.getElementById('sliderStatus').checked =
-        slider.status == 1;
+        slider.is_active  == 1;
 
     document.getElementById('formModal').classList.add('open');
 }
@@ -398,7 +461,7 @@ function handleBackdropClick(e) {
 async function saveSlider() {
 
     const image  = document.getElementById('sliderImage').files[0];
-    const status = document.getElementById('sliderStatus').checked ? 1 : 0;
+    const is_active  = document.getElementById('sliderStatus').checked ? 1 : 0;
 
     if (!editingId && !image) {
         alert('Please select image');
@@ -411,7 +474,7 @@ async function saveSlider() {
         formData.append('image', image);
     }
 
-    formData.append('status', status);
+    formData.append('is_active ', is_active );
 
     if (editingId) {
         formData.append('_method', 'PUT');
@@ -477,7 +540,7 @@ async function toggleStatus(id, checked) {
     const formData = new FormData();
 
     formData.append('_method', 'PUT');
-    formData.append('status', checked ? 1 : 0);
+    formData.append('is_active ', checked ? 1 : 0);
 
     try {
 
@@ -496,7 +559,7 @@ async function toggleStatus(id, checked) {
             throw new Error(data.message ?? 'Failed');
         }
 
-        slider.status = checked ? 1 : 0;
+        slider.is_active  = checked ? 1 : 0;
 
         render(sliders);
 

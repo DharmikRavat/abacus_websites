@@ -76,6 +76,7 @@
             <span>Try a different search or create a new FAQ</span>
 
         </div>
+        <div id="pagination" class="pagination"></div>
 
     </div>
 </div>
@@ -232,6 +233,8 @@
 let faqs       = @json($faqs);
 let editingId  = null;
 let deletingId = null;
+let currentPage = 1;
+const perPage = 5;
 
 const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
@@ -245,6 +248,51 @@ function formatDate(str) {
     });
 }
 
+function renderPagination(totalPages) {
+
+    let html = '';
+
+    html += `
+        <button
+            ${currentPage == 1 ? 'disabled' : ''}
+            onclick="changePage(${currentPage - 1})">
+            Previous
+        </button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+        html += `
+            <button
+                class="${i == currentPage ? 'active' : ''}"
+                onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    html += `
+        <button
+            ${currentPage == totalPages ? 'disabled' : ''}
+            onclick="changePage(${currentPage + 1})">
+            Next
+        </button>
+    `;
+
+    document.getElementById('pagination').innerHTML = html;
+}
+
+function changePage(page) {
+
+    currentPage = page;
+
+    const search = document.getElementById('searchInput').value.toLowerCase();
+
+    render(
+        faqs.filter(f =>
+            f.question.toLowerCase().includes(search)
+        )
+    );
+}
 // ─────────────────────────────────────
 // Render
 // ─────────────────────────────────────
@@ -256,22 +304,33 @@ function render(list) {
     document.getElementById('faq-count').textContent =
         list.length + ' FAQ' + (list.length !== 1 ? 's' : '');
 
-    if (!list.length) {
-        tbody.innerHTML = '';
-        empty.style.display = 'block';
-        return;
-    }
+if (!list.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+}
 
-    empty.style.display = 'none';
+empty.style.display = 'none';
 
-    tbody.innerHTML = list.map((faq, i) => {
+const totalPages = Math.ceil(list.length / perPage);
+
+if (currentPage > totalPages) {
+    currentPage = totalPages;
+}
+
+const start = (currentPage - 1) * perPage;
+const pageData = list.slice(start, start + perPage);
+
+
+    tbody.innerHTML = pageData.map((faq, i) => {
 
         const active = faq.is_active == 1;
 
         return `
         <tr>
 
-            <td>${i + 1}</td>
+       <td>${start + i + 1}</td>
 
             <td>
                 <strong>${escHtml(faq.question)}</strong>
@@ -362,6 +421,7 @@ function render(list) {
         `;
 
     }).join('');
+    renderPagination(totalPages);
 }
 
 // ─────────────────────────────────────
@@ -369,15 +429,16 @@ function render(list) {
 // ─────────────────────────────────────
 function filterFaqs(q) {
 
-    const lower = q.toLowerCase();
+    currentPage = 1;
+
+    q = q.toLowerCase();
 
     render(
         faqs.filter(f =>
-            f.question.toLowerCase().includes(lower)
+            f.question.toLowerCase().includes(q)
         )
     );
 }
-
 // ─────────────────────────────────────
 // Create Modal
 // ─────────────────────────────────────

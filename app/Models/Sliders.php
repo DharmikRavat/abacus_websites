@@ -11,6 +11,6 @@ class Sliders extends Model
     use HasFactory;
     protected $fillable = [
         'image',
-        'status',
+        'is_active',
     ];
 }

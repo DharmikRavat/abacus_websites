@@ -60,60 +60,59 @@
 
     </div>
 
-    <div style="overflow-x:auto">
+<div style="overflow-x:auto">
 
-        <table class="roles-table">
+    <table class="roles-table">
 
-            <thead>
+        <thead>
 
-                <tr>
+            <tr>
 
-                    <th>#</th>
-                    <th>Student</th>
-                    <th>Parents</th>
-                    <th>Mobile</th>
-                    <th>Level</th>
-                    <th>Score</th>
-                    <th>Result</th>
-                    <th>Created</th>
+                <th>#</th>
+                <th>Certificate ID</th>
+                <th>Title</th>
+                <th>Student Enrollment ID</th>
+                <th>Student Name</th>
+                <th>File</th>
+                <th>Created</th>
 
-                    <th style="text-align:right">
-                        Actions
-                    </th>
+                <th style="text-align:right">
+                    Actions
+                </th>
 
-                </tr>
+            </tr>
 
-            </thead>
+        </thead>
 
-            <tbody id="certificateBody"></tbody>
+        <tbody id="certificateBody"></tbody>
 
-        </table>
+    </table>
 
-        <div id="emptyState"
-             class="empty-state"
-             style="display:none">
+    <div id="emptyState"
+         class="empty-state"
+         style="display:none">
 
-            <svg width="40"
-                 height="40"
-                 viewBox="0 0 24 24"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="1.5">
+        <svg width="40"
+             height="40"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.5">
 
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9 12l2 2 4-4"/>
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9 12l2 2 4-4"/>
 
-            </svg>
+        </svg>
 
-            <p>No Certificates Found</p>
+        <p>No Certificates Found</p>
 
-            <span>
-                Create your first certification record
-            </span>
-
-        </div>
+        <span>
+            Upload your first certificate.
+        </span>
 
     </div>
+
+</div>
 
 </div>
 
@@ -123,12 +122,12 @@
      onclick="handleBackdropClick(event)">
 
     <div class="modal"
-         style="max-width:1000px;width:95%">
+         style="max-width:700px;width:95%">
 
         <div class="modal-header">
 
             <h2 id="modalTitle">
-                New Certification
+                Upload Certificate
             </h2>
 
             <button class="btn-icon"
@@ -142,267 +141,66 @@
 
         <div class="modal-body">
 
-            {{-- CERTIFICATION DETAILS --}}
-            <div class="section-title">
-                Certification Details
-            </div>
-
             <div class="form-grid">
 
                 <div class="form-group">
 
                     <label class="form-label">
-                        Trainer Name
+                        Certificate Title <span style="color:red">*</span>
                     </label>
 
-                    <input type="text"
-                           id="trainer_name"
-                           class="form-control">
+                    <input
+                        type="text"
+                        id="title"
+                        class="form-control"
+                        placeholder="Enter certificate title">
 
                 </div>
 
-                <div class="form-group">
+             <div class="form-group">
+
+    <label class="form-label">
+        Student <span style="color:red">*</span>
+    </label>
+
+    <select
+        id="student_enrollment_id"
+        class="form-control">
+
+        <option value="">
+            -- Select Student --
+        </option>
+
+        @foreach($students as $student)
+
+            <option value="{{ $student->student_enrollment_id }}">
+
+                {{ $student->name }}
+                ({{ $student->student_enrollment_id }})
+
+            </option>
+
+        @endforeach
+
+    </select>
+
+</div>
+
+                <div class="form-group full-width">
 
                     <label class="form-label">
-                        Certificate Date
+                        Certificate File
                     </label>
 
-                    <input type="date"
-                           id="certificate_date"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Level
-                    </label>
-
-                    <input type="text"
-                           id="level"
-                           class="form-control">
-
-                </div>
-
-            </div>
-
-            {{-- STUDENT DETAILS --}}
-            <div class="section-title">
-                Student Details
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Student Name *
-                    </label>
-
-                    <input type="text"
-                           id="student_name"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Parents Name
-                    </label>
-
-                    <input type="text"
-                           id="parents_name"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Mobile No.
-                    </label>
-
-                    <input type="text"
-                           id="mobile_no"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Exam Date
-                    </label>
-
-                    <input type="date"
-                           id="exam_date"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Score
-                    </label>
-
-                    <input type="number"
-                           id="score"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Result
-                    </label>
-
-                    <select id="result"
-                            class="form-control">
-
-                        <option value="">
-                            Select Result
-                        </option>
-
-                        <option value="Outstanding">
-                            Outstanding
-                        </option>
-
-                        <option value="Pass">
-                            Pass
-                        </option>
-
-                        <option value="Fail">
-                            Fail
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-            {{-- ADDRESS --}}
-            <div class="section-title">
-                Address Details
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Address
-                    </label>
-
-                    <textarea id="address"
-                              class="form-control"
-                              rows="3"></textarea>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Receiver Contact
-                    </label>
-
-                    <input type="text"
-                           id="receiver_contact"
-                           class="form-control">
-
-                </div>
-
-            </div>
-
-            {{-- FILES --}}
-            <div class="section-title">
-                Upload Files
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Address Image
-                    </label>
-
-                    <input type="file"
-                           id="address_image"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Certificate Image
-                    </label>
-
-                    <input type="file"
-                           id="certificate_image"
-                           class="form-control">
-
-                </div>
-
-            </div>
-
-            {{-- DISPATCH --}}
-            <div class="section-title">
-                Dispatch Details
-            </div>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Dispatch Date
-                    </label>
-
-                    <input type="date"
-                           id="dispatch_date"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Dispatch ID
-                    </label>
-
-                    <input type="text"
-                           id="dispatch_id"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Received Date
-                    </label>
-
-                    <input type="date"
-                           id="received_date"
-                           class="form-control">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label class="form-label">
-                        Remark
-                    </label>
-
-                    <input type="text"
-                           id="remark"
-                           class="form-control">
+                    <input
+                        type="file"
+                        id="file"
+                        class="form-control"
+                        accept=".pdf,.jpg,.jpeg,.png">
+
+                    <small style="color:#666">
+                        Allowed: PDF, JPG, JPEG, PNG (Max 5 MB)
+                    </small>
 
                 </div>
 
@@ -412,19 +210,23 @@
 
         <div class="modal-footer">
 
-            <button class="btn btn-ghost"
-                    onclick="closeFormModal()">
+            <button
+                class="btn btn-ghost"
+                onclick="closeFormModal()">
 
                 Cancel
 
             </button>
 
-            <button class="btn btn-primary"
-                    id="saveBtn"
-                    onclick="saveCertificate()">
+            <button
+                class="btn btn-primary"
+                id="saveBtn"
+                onclick="saveCertificate()">
 
                 <span class="btn-label">
+
                     Save Certificate
+
                 </span>
 
             </button>
@@ -471,100 +273,85 @@
 
 <script>
 
-let certificates = @json($certifications ?? []);
+let certificates = @json($certificates ?? []);
 
 let editingId = null;
 
 const CSRF =
-    document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
-function formatDate(str) {
+function formatDate(date){
 
-    if (!str) return '—';
+    if(!date) return '-';
 
-    return new Date(str).toLocaleDateString('en-US', {
-
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-
-    });
+    return new Date(date).toLocaleDateString();
 }
 
-// ─────────────────────────────
-// Render
-// ─────────────────────────────
-function render(list) {
+// ================================
+// Render Table
+// ================================
+function render(list){
 
-    const tbody =
-        document.getElementById('certificateBody');
+    const tbody=document.getElementById('certificateBody');
+    const empty=document.getElementById('emptyState');
 
-    const empty =
-        document.getElementById('emptyState');
-
-    document.getElementById('certificate-count').textContent =
+    document.getElementById('certificate-count').innerText =
         list.length + ' Certificates';
 
-    if (!list.length) {
+    if(list.length===0){
 
-        tbody.innerHTML = '';
+        tbody.innerHTML='';
 
-        empty.style.display = 'block';
+        empty.style.display='block';
 
         return;
     }
 
-    empty.style.display = 'none';
+    empty.style.display='none';
 
-    tbody.innerHTML = list.map((item, i) => {
-
-        return `
+    tbody.innerHTML=list.map((item,index)=>`
 
         <tr>
 
-            <td>${i + 1}</td>
+            <td>${index+1}</td>
+
+            <td>${item.certificate_unique_id}</td>
+
+            <td>${item.title}</td>
+
+            <td>${item.student_enrollment_id}</td>
+
+         <td>${item.student ? item.student.name : '-'}</td>
 
             <td>
-                <strong>${item.student_name ?? ''}</strong>
+
+                <a href="/${item.file}"
+                   target="_blank"
+                   class="btn btn-sm btn-primary">
+
+                    View
+
+                </a>
+
             </td>
-
-            <td>${item.parents_name ?? '-'}</td>
-
-            <td>${item.mobile_no ?? '-'}</td>
-
-            <td>${item.level ?? '-'}</td>
-
-            <td>${item.score ?? '-'}</td>
-
-            <td>${item.result ?? '-'}</td>
 
             <td>${formatDate(item.created_at)}</td>
 
             <td>
 
                 <div class="actions-cell"
-                     style="justify-content:flex-end;gap:8px">
-
-<button class="btn-icon"
-        title="View Certificate"
-        onclick="window.open('/admin/certification/view/${item.id}', '_blank')">
-
-    👁️
-
-</button>
+                     style="justify-content:flex-end;gap:8px;">
 
                     <button class="btn-icon"
-                            title="Edit"
-                            onclick="editCertificate(${item.id})">
+                        onclick="editCertificate(${item.id})">
 
                         ✏️
 
                     </button>
 
                     <button class="btn-icon"
-                            title="Delete"
-                            style="color:red"
-                            onclick="deleteCertificate(${item.id})">
+                        style="color:red"
+                        onclick="deleteCertificate(${item.id})">
 
                         🗑️
 
@@ -576,156 +363,114 @@ function render(list) {
 
         </tr>
 
-        `;
+    `).join('');
 
-    }).join('');
 }
 
-// ─────────────────────────────
-// Search
-// ─────────────────────────────
-function filterCertificates(q) {
 
-    q = q.toLowerCase();
+// ================================
+// Search
+// ================================
+function filterCertificates(q){
+
+    q=q.toLowerCase();
 
     render(
 
-        certificates.filter(item =>
+        certificates.filter(item=>
 
-            item.student_name?.toLowerCase().includes(q)
+            item.title.toLowerCase().includes(q) ||
+
+            item.student_enrollment_id.toLowerCase().includes(q) ||
+
+            item.certificate_unique_id.toLowerCase().includes(q)
 
         )
 
     );
+
 }
 
-// ─────────────────────────────
-// Open Create Modal
-// ─────────────────────────────
-function openCreateModal() {
 
-    editingId = null;
+// ================================
+// Open Modal
+// ================================
+function openCreateModal(){
+
+    editingId=null;
 
     clearForm();
 
     document.getElementById('modalTitle').innerText =
-        'New Certification';
+        'Upload Certificate';
 
     document.querySelector('#saveBtn .btn-label').innerText =
         'Save Certificate';
 
-    document.getElementById('formModal')
+    document
+        .getElementById('formModal')
         .classList.add('open');
+
 }
 
-// ─────────────────────────────
+
+// ================================
 // Clear Form
-// ─────────────────────────────
-function clearForm() {
+// ================================
+function clearForm(){
 
-    document.getElementById('trainer_name').value = '';
-    document.getElementById('certificate_date').value = '';
-    document.getElementById('level').value = '';
-    document.getElementById('student_name').value = '';
-    document.getElementById('parents_name').value = '';
-    document.getElementById('mobile_no').value = '';
-    document.getElementById('exam_date').value = '';
-    document.getElementById('score').value = '';
-    document.getElementById('result').value = '';
-    document.getElementById('address').value = '';
-    document.getElementById('receiver_contact').value = '';
-    document.getElementById('dispatch_date').value = '';
-    document.getElementById('dispatch_id').value = '';
-    document.getElementById('received_date').value = '';
-    document.getElementById('remark').value = '';
+    document.getElementById('title').value='';
 
-    document.getElementById('address_image').value = '';
-    document.getElementById('certificate_image').value = '';
+    document.getElementById('student_enrollment_id').value='';
+
+    document.getElementById('file').value='';
+
 }
 
-// ─────────────────────────────
+
+// ================================
 // Close Modal
-// ─────────────────────────────
-function closeFormModal() {
+// ================================
+function closeFormModal(){
 
-    document.getElementById('formModal')
+    document
+        .getElementById('formModal')
         .classList.remove('open');
+
 }
 
-function handleBackdropClick(e) {
 
-    if (e.target.id === 'formModal') {
+function handleBackdropClick(e){
+
+    if(e.target.id==='formModal'){
 
         closeFormModal();
-    }
-}
 
-// ─────────────────────────────
-// Save / Update
-// ─────────────────────────────
+    }
+
+}
+// ================================
+// Save / Update Certificate
+// ================================
 async function saveCertificate() {
 
     let formData = new FormData();
 
-    formData.append('trainer_name',
-        document.getElementById('trainer_name').value);
+    formData.append(
+        'title',
+        document.getElementById('title').value
+    );
 
-    formData.append('certificate_date',
-        document.getElementById('certificate_date').value);
+    formData.append(
+        'student_enrollment_id',
+        document.getElementById('student_enrollment_id').value
+    );
 
-    formData.append('level',
-        document.getElementById('level').value);
+    let file =
+        document.getElementById('file').files[0];
 
-    formData.append('student_name',
-        document.getElementById('student_name').value);
-
-    formData.append('parents_name',
-        document.getElementById('parents_name').value);
-
-    formData.append('mobile_no',
-        document.getElementById('mobile_no').value);
-
-    formData.append('exam_date',
-        document.getElementById('exam_date').value);
-
-    formData.append('score',
-        document.getElementById('score').value);
-
-    formData.append('result',
-        document.getElementById('result').value);
-
-    formData.append('address',
-        document.getElementById('address').value);
-
-    formData.append('receiver_contact',
-        document.getElementById('receiver_contact').value);
-
-    formData.append('dispatch_date',
-        document.getElementById('dispatch_date').value);
-
-    formData.append('dispatch_id',
-        document.getElementById('dispatch_id').value);
-
-    formData.append('received_date',
-        document.getElementById('received_date').value);
-
-    formData.append('remark',
-        document.getElementById('remark').value);
-
-    let addressImage =
-        document.getElementById('address_image').files[0];
-
-    let certificateImage =
-        document.getElementById('certificate_image').files[0];
-
-    if (addressImage) {
-
-        formData.append('address_image', addressImage);
-    }
-
-    if (certificateImage) {
-
-        formData.append('certificate_image', certificateImage);
+    if (file) {
+        formData.append('file', file);
     }
 
     let url = '/admin/certification';
@@ -739,25 +484,28 @@ async function saveCertificate() {
 
     try {
 
-        const res = await fetch(url, {
+        const response = await fetch(url, {
 
             method: 'POST',
 
             headers: {
 
                 'X-CSRF-TOKEN': CSRF,
+
                 'Accept': 'application/json'
 
             },
 
             body: formData
+
         });
 
-        const data = await res.json();
+        const data = await response.json();
 
-        if (!res.ok) {
+        if (!response.ok) {
 
-            throw new Error(data.message || 'Failed');
+            throw new Error(data.message || 'Something went wrong.');
+
         }
 
         if (editingId) {
@@ -767,16 +515,18 @@ async function saveCertificate() {
 
             if (index !== -1) {
 
-                certificates[index] = data.certification;
+                certificates[index] = data.data;
+
             }
 
-            alert('Certificate updated successfully');
+            alert('Certificate updated successfully.');
 
         } else {
 
-            certificates.unshift(data.certification);
+            certificates.unshift(data.data);
 
-            alert('Certificate created successfully');
+            alert('Certificate uploaded successfully.');
+
         }
 
         render(certificates);
@@ -786,80 +536,45 @@ async function saveCertificate() {
     } catch (err) {
 
         alert(err.message);
+
     }
+
 }
 
-// ─────────────────────────────
+
+// ================================
 // Edit
-// ─────────────────────────────
+// ================================
 async function editCertificate(id) {
 
     try {
 
-        const res =
+        const response =
             await fetch(`/admin/certification/${id}/edit`);
 
-        const data = await res.json();
+        const data = await response.json();
 
         if (!data.success) {
 
             throw new Error(data.message);
+
         }
 
-        const item = data.certification;
+        const item = data.data;
 
         editingId = item.id;
 
         document.getElementById('modalTitle').innerText =
-            'Update Certification';
+            'Update Certificate';
 
         document.querySelector('#saveBtn .btn-label').innerText =
             'Update Certificate';
 
-        document.getElementById('trainer_name').value =
-            item.trainer_name ?? '';
+        document.getElementById('title').value =
+            item.title ?? '';
 
-        document.getElementById('certificate_date').value =
-            item.certificate_date ?? '';
-
-        document.getElementById('level').value =
-            item.level ?? '';
-
-        document.getElementById('student_name').value =
-            item.student_name ?? '';
-
-        document.getElementById('parents_name').value =
-            item.parents_name ?? '';
-
-        document.getElementById('mobile_no').value =
-            item.mobile_no ?? '';
-
-        document.getElementById('exam_date').value =
-            item.exam_date ?? '';
-
-        document.getElementById('score').value =
-            item.score ?? '';
-
-        document.getElementById('result').value =
-            item.result ?? '';
-
-        document.getElementById('address').value =
-            item.address ?? '';
-
-        document.getElementById('receiver_contact').value =
-            item.receiver_contact ?? '';
-
-        document.getElementById('dispatch_date').value =
-            item.dispatch_date ?? '';
-
-        document.getElementById('dispatch_id').value =
-            item.dispatch_id ?? '';
-
-        document.getElementById('received_date').value =
-            item.received_date ?? '';
-
-        document.getElementById('remark').value =
-            item.remark ?? '';
+        document.getElementById('student_enrollment_id').value =
+            item.student_enrollment_id ?? '';
 
         document.getElementById('formModal')
             .classList.add('open');
@@ -867,195 +582,63 @@ async function editCertificate(id) {
     } catch (err) {
 
         alert(err.message);
+
     }
-}
 
-// ─────────────────────────────
-// View
-// ─────────────────────────────
-
-async function viewCertificate(id) {
-
-    try {
-
-        const response = await fetch(`/admin/certification/${id}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-
-        // DEBUG RESPONSE
-        const text = await response.text();
-
-        console.log(text);
-
-        // convert safely
-        const data = JSON.parse(text);
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed');
-        }
-
-        const c = data.certification;
-
-        let html = `
-            <div style="padding:10px">
-
-                <div class="form-grid">
-
-                    <div>
-                        <strong>Student Name:</strong><br>
-                        ${c.student_name ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Parents Name:</strong><br>
-                        ${c.parents_name ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Mobile:</strong><br>
-                        ${c.mobile_no ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Trainer:</strong><br>
-                        ${c.trainer_name ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Level:</strong><br>
-                        ${c.level ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Score:</strong><br>
-                        ${c.score ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Result:</strong><br>
-                        ${c.result ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Exam Date:</strong><br>
-                        ${c.exam_date ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Certificate Date:</strong><br>
-                        ${c.certificate_date ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Dispatch Date:</strong><br>
-                        ${c.dispatch_date ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Received Date:</strong><br>
-                        ${c.received_date ?? '-'}
-                    </div>
-
-                    <div>
-                        <strong>Receiver Contact:</strong><br>
-                        ${c.receiver_contact ?? '-'}
-                    </div>
-
-                </div>
-
-                <div style="margin-top:20px">
-
-                    <strong>Address:</strong>
-
-                    <div style="margin-top:5px">
-                        ${c.address ?? '-'}
-                    </div>
-
-                </div>
-
-                <div style="margin-top:20px">
-
-                    <strong>Remark:</strong>
-
-                    <div style="margin-top:5px">
-                        ${c.remark ?? '-'}
-                    </div>
-
-                </div>
-
-            </div>
-        `;
-
-        document.getElementById('viewContent').innerHTML = html;
-
-        document.getElementById('viewModal')
-            .classList.add('open');
-
-    } catch (err) {
-
-        console.error(err);
-
-        alert(err.message);
-    }
 }
 
 
-// ─────────────────────────────
-// Close View Modal
-// ─────────────────────────────
-function closeViewModal() {
+// ================================
+// Download
+// ================================
+function downloadCertificate(id) {
 
-    document.getElementById('viewModal')
-        .classList.remove('open');
+    window.open(
+        `/admin/certification/download/${id}`,
+        '_blank'
+    );
+
 }
 
-function handleViewBackdrop(e) {
 
-    if (e.target.id === 'viewModal') {
-
-        closeViewModal();
-    }
-}
-
-// ─────────────────────────────
+// ================================
 // Delete
-// ─────────────────────────────
+// ================================
 async function deleteCertificate(id) {
 
-    if (!confirm('Delete this certificate?')) {
+    if (!confirm('Are you sure you want to delete this certificate?')) {
 
         return;
+
     }
 
     try {
 
-        const res =
+        const response =
             await fetch(`/admin/certification/${id}`, {
 
-            method: 'DELETE',
+                method: 'DELETE',
 
-            headers: {
+                headers: {
 
-                'X-CSRF-TOKEN': CSRF,
-                'Accept': 'application/json'
+                    'X-CSRF-TOKEN': CSRF,
 
-            }
+                    'Accept': 'application/json'
 
-        });
+                }
 
-        const data = await res.json();
+            });
 
-        if (!res.ok) {
+        const data = await response.json();
 
-            throw new Error(data.message || 'Delete failed');
+        if (!response.ok) {
+
+            throw new Error(data.message);
+
         }
 
         certificates =
-            certificates.filter(item => item.id !== id);
+            certificates.filter(item => item.id != id);
 
         render(certificates);
 
@@ -1064,11 +647,19 @@ async function deleteCertificate(id) {
     } catch (err) {
 
         alert(err.message);
+
     }
+
 }
 
+
+// ================================
+// Initial Render
+// ================================
 render(certificates);
 
+
 </script>
+
 
 @endsection

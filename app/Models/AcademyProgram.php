@@ -7,13 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class AcademyProgram extends Model
 {
-    //
     use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
         'duration',
         'is_active',
-        'image'
+        'image',
+        'link',
+        'program_images',
+    ];
+
+    protected $casts = [
+        'program_images' => 'array',
+        'is_active' => 'boolean',
     ];
 }

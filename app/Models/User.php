@@ -26,7 +26,8 @@ class User extends Authenticatable
         'type',
         'status',
         'permissions',
-        'slug_id'
+        'slug_id',
+        'teacher_enrollment_id'
     ];
 
     /**

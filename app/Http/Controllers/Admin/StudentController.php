@@ -80,6 +80,8 @@ class StudentController extends Controller
             'added_by'          => 'nullable|string|max:255',
 
             'center_id'         => 'nullable|integer',
+
+            'student_enrollment_id' => 'nullable|string|max:50',
         ]);
 
         $profile = null;
@@ -171,6 +173,8 @@ class StudentController extends Controller
             'added_by'          => $addedBy,
 
             'center_id'         => $request->center_id,
+
+            'student_enrollment_id' => $request->student_enrollment_id,
         ]);
 
         return response()->json([
@@ -233,6 +237,7 @@ class StudentController extends Controller
             'added_by'          => 'nullable|string|max:255',
 
             'center_id'         => 'nullable|integer',
+            'student_enrollment_id' => 'nullable|string|max:50',
         ]);
 
         $profile = null;
@@ -312,6 +317,8 @@ class StudentController extends Controller
             'added_by'          => $request->added_by,
 
             'center_id'         => $request->center_id,
+
+            'student_enrollment_id' => $request->student_enrollment_id,
         ]);
 
         return response()->json([
@@ -394,6 +401,8 @@ class StudentController extends Controller
             'added_by'          => 'nullable|string|max:255',
 
             'center_id'         => 'nullable|integer',
+            'student_enrollment_id' => 'nullable|string|max:50',
+            
         ]);
 
         /*
@@ -469,6 +478,7 @@ class StudentController extends Controller
             'added_by'          => $request->added_by,
 
             'center_id'         => $request->center_id,
+            'student_enrollment_id' => $request->student_enrollment_id,
         ]);
 
         /*

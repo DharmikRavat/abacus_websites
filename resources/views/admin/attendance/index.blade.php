@@ -9,6 +9,13 @@
         <p>Manage student attendance records</p>
     </div>
 
+<div style="display:flex;gap:10px;align-items:center;">
+ <button class="btn btn-primary"
+            onclick="openMonthlyReportModal()">
+
+     Monthly Attendance
+
+    </button>
     <button class="btn btn-primary" onclick="openCreateModal()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2.5">
@@ -18,6 +25,7 @@
 
         Mark Attendance
     </button>
+    </div>
 </div>
 
 {{-- ═══════════ TABLE CARD ═══════════ --}}
@@ -294,6 +302,109 @@
     </div>
 </div>
 
+
+{{-- ═══════════════════════════════════════════════
+     MONTHLY ATTENDANCE MODAL
+═══════════════════════════════════════════════ --}}
+
+<div class="modal-backdrop"
+     id="monthlyReportModal"
+     onclick="handleMonthlyReportBackdrop(event)">
+
+    <div class="modal"
+         style="max-width:450px;">
+
+        <div class="modal-header">
+
+            <h2>
+                Monthly Attendance Report
+            </h2>
+
+            <button class="btn-icon"
+                    onclick="closeMonthlyReportModal()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div style="
+                padding:12px;
+                margin-bottom:18px;
+                border-radius:8px;
+                background:var(--surface);
+                border:1px solid var(--border);
+                font-size:13px;
+                line-height:1.5;
+            ">
+
+                Select the start and end date.
+
+                <br>
+
+                <strong>
+                    Both dates must be from the same month.
+                </strong>
+
+            </div>
+
+            {{-- Start Date --}}
+            <div class="form-group">
+
+                <label class="form-label">
+                    Start Date *
+                </label>
+
+                <input
+                    type="date"
+                    id="monthly_start_date"
+                    class="form-control"
+                >
+
+            </div>
+
+            {{-- End Date --}}
+            <div class="form-group">
+
+                <label class="form-label">
+                    End Date *
+                </label>
+
+                <input
+                    type="date"
+                    id="monthly_end_date"
+                    class="form-control"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button class="btn btn-ghost"
+                    onclick="closeMonthlyReportModal()">
+
+                Cancel
+
+            </button>
+
+            <button class="btn btn-primary"
+                    onclick="generateMonthlyReport()">
+
+                📊 Generate Report
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 <script>
 
 let attendances = @json($attendances);
@@ -443,24 +554,49 @@ function openCreateModal() {
 // ─────────────────────────────────────
 function openEditModal(id) {
 
-    const item = attendances.find(x => x.id === id);
+    const item = attendances.find(x => Number(x.id) === Number(id));
 
-    if (!item) return;
+    if (!item) {
+        console.error('Attendance record not found:', id);
+        return;
+    }
 
-    editingId = id;
+    editingId = item.id;
 
     document.getElementById('modalTitle').textContent =
         'Edit Attendance';
 
+    // Student
     document.getElementById('student_id').value =
-        item.student_id;
+        item.student_id ?? '';
+
+    // Attendance Date
+    let attendanceDate = item.attendance_date ?? '';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Convert Laravel date to YYYY-MM-DD
+    |--------------------------------------------------------------------------
+    |
+    | Examples:
+    | 2026-07-01
+    | 2026-07-01T00:00:00.000000Z
+    | 2026-07-01 00:00:00
+    |
+    */
+
+    if (attendanceDate) {
+        attendanceDate = String(attendanceDate).substring(0, 10);
+    }
 
     document.getElementById('attendance_date').value =
-        item.attendance_date;
+        attendanceDate;
 
+    // Status
     document.getElementById('status').value =
-        item.status;
+        item.status ?? 'P';
 
+    // Remark
     document.getElementById('remark').value =
         item.remark ?? '';
 
@@ -468,8 +604,10 @@ function openEditModal(id) {
         'Update Attendance';
 
     document.getElementById('formModal').classList.add('open');
-}
 
+    console.log('Editing attendance:', item);
+    console.log('Date:', attendanceDate);
+}
 function closeFormModal() {
 
     document.getElementById('formModal')
@@ -640,6 +778,168 @@ document.addEventListener('keydown', e => {
         closeDeleteModal();
     }
 });
+
+
+
+// ═══════════════════════════════════════════════
+// MONTHLY ATTENDANCE REPORT
+// ═══════════════════════════════════════════════
+
+function openMonthlyReportModal() {
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+
+    const month =
+        String(now.getMonth() + 1)
+            .padStart(2, '0');
+
+    /*
+    |--------------------------------------------------------------------------
+    | First day of current month
+    |--------------------------------------------------------------------------
+    */
+
+    const firstDay =
+        `${year}-${month}-01`;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Last day of current month
+    |--------------------------------------------------------------------------
+    */
+
+    const lastDayNumber =
+        new Date(
+            year,
+            now.getMonth() + 1,
+            0
+        ).getDate();
+
+    const lastDay =
+        `${year}-${month}-${String(lastDayNumber).padStart(2, '0')}`;
+
+    document.getElementById(
+        'monthly_start_date'
+    ).value = firstDay;
+
+    document.getElementById(
+        'monthly_end_date'
+    ).value = lastDay;
+
+    document.getElementById(
+        'monthlyReportModal'
+    ).classList.add('open');
+}
+
+
+function closeMonthlyReportModal() {
+
+    document.getElementById(
+        'monthlyReportModal'
+    ).classList.remove('open');
+}
+
+
+function handleMonthlyReportBackdrop(event) {
+
+    if (
+        event.target.id ===
+        'monthlyReportModal'
+    ) {
+        closeMonthlyReportModal();
+    }
+}
+
+
+function generateMonthlyReport() {
+
+    const startDate =
+        document.getElementById(
+            'monthly_start_date'
+        ).value;
+
+    const endDate =
+        document.getElementById(
+            'monthly_end_date'
+        ).value;
+
+
+    if (!startDate || !endDate) {
+
+        alert(
+            'Please select Start Date and End Date.'
+        );
+
+        return;
+    }
+
+
+    if (startDate > endDate) {
+
+        alert(
+            'Start Date cannot be greater than End Date.'
+        );
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Check same month
+    |--------------------------------------------------------------------------
+    */
+
+    const start =
+        new Date(startDate + 'T00:00:00');
+
+    const end =
+        new Date(endDate + 'T00:00:00');
+
+
+    if (
+        start.getMonth() !== end.getMonth() ||
+        start.getFullYear() !== end.getFullYear()
+    ) {
+
+        alert(
+            'Start Date and End Date must be from the same month.'
+        );
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Build URL
+    |--------------------------------------------------------------------------
+    */
+
+    const url =
+        '/admin/attendance/monthly-report' +
+        '?start_date=' +
+        encodeURIComponent(startDate) +
+        '&end_date=' +
+        encodeURIComponent(endDate);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Open report in NEW TAB
+    |--------------------------------------------------------------------------
+    */
+
+    window.open(
+        url,
+        '_blank'
+    );
+
+
+    closeMonthlyReportModal();
+}
 
 render(attendances);
 

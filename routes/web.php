@@ -30,18 +30,26 @@ use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\CertificationController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\FeedbackController;
+use App\Http\Controllers\Admin\FranchisePageController;
 use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\GlobalPresenceController;
 use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\LocateCenterController;
 use App\Http\Controllers\Admin\ManageTestController;
 use App\Http\Controllers\Admin\PrivacyPolicyController;
+use App\Http\Controllers\Admin\ProgramWriteupController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\QuestionTypeController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ScoreController;
 use App\Http\Controllers\Admin\SliderImageController;
+use App\Http\Controllers\Admin\StatisticsController;
+use App\Http\Controllers\Admin\StudentFeeRecordController;
+use App\Http\Controllers\Admin\StudentLeadController;
+use App\Http\Controllers\Admin\TeacherAdmissionController;
 use App\Http\Controllers\Admin\TermsConditionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserLoginLogController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\StudentAuthController;
 use App\Http\Controllers\Client\StudentDashboardController;
@@ -73,12 +81,15 @@ Route::get('/gallery', function () {
 Route::get('/programs', function () {
     return view('client.program.index');
 })->name('programs');
+
 Route::get('/contact-us', function () {
     return view('client.contact-us.index');
 })->name('contact-us');
-Route::get('/franchise', function () {
+
+Route::get('/franchise-detail', function () {
     return view('client.franchise.index');
 })->name('franchise');
+
 Route::get('/exam-test', function () {
     return view('client.exam-test.index');
 })->name('exam-test');
@@ -183,7 +194,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::resource('students', StudentController::class);
     Route::resource('teachers', TeacherController::class);
+    Route::get(
+        'attendance/monthly-report',
+        [AttendanceController::class, 'monthlyReport']
+    )->name('attendance.monthly-report');
+    
+    Route::get(
+        'attendance/monthly-report/pdf',
+        [AttendanceController::class, 'monthlyReportPdf']
+    )->name('attendance.monthly-report.pdf');
     Route::resource('attendance', AttendanceController::class);
+
     Route::resource('fees', FeeController::class);
     Route::resource('invoices', InvoiceController::class);
     Route::resource('timetable', TimeTableController::class);
@@ -196,7 +217,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('fee-types', FeeTypeController::class);
     Route::resource('batches', BatchController::class);
     Route::resource('academy-programs', AcademyProgramController::class);
+    Route::get('/program-writeup', [ProgramWriteupController::class, 'index'])
+    ->name('program-writeup.index');
+
+Route::post('/program-writeup', [ProgramWriteupController::class, 'update'])
+    ->name('program-writeup.update');
     Route::resource('faqs', FaqController::class);
+    Route::resource('franchise-page', FranchisePageController::class);
     Route::resource('slider-images', SliderImageController::class);
     Route::resource('about-us', AboutUsController::class);
     Route::resource('privacy-policy', PrivacyPolicyController::class)
@@ -211,6 +238,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('scores', ScoreController::class);
     Route::resource('feedbacks', FeedbackController::class);
     Route::resource('locate-centers', LocateCenterController::class);
+    Route::resource('statistics', StatisticsController::class);
+    Route::resource('global-presences', GlobalPresenceController::class);
     Route::resource('users', UserController::class);
     Route::get('/report', [ReportController::class, 'index'])
         ->name('report.index');
@@ -222,6 +251,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         'certification/view/{id}',
         [CertificationController::class, 'showCertificate']
     );
+    Route::get('/activity-log', [UserLoginLogController::class, 'index'])
+    ->name('activity-log.index');
+
+Route::get('/activity-log/{userLoginLog}', [UserLoginLogController::class, 'show'])
+    ->name('activity-log.show');
+
+    Route::resource('student-fees', StudentFeeRecordController::class);
+    Route::resource('teacher-fees', TeacherAdmissionController::class);
+    Route::resource('student-leads', StudentLeadController::class);
 
     /*
     |--------------------------------------------------------------------------
@@ -271,6 +309,7 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
 
         Route::resource('students', StudentController::class);
         Route::resource('attendance', AttendanceController::class);
+       
         Route::resource('scores', ScoreController::class);
 
         Route::resource('manage-tests', ManageTestController::class);

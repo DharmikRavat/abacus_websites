@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Client;
+
+use App\Helpers\LoginLogger;
 use App\Http\Controllers\Controller;
+
+use Jenssegers\Agent\Agent;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +59,12 @@ class StudentAuthController extends Controller
             'student_email' => $student->email,
             'student_role'  => $student->role,
         ]);
+        // Log the login
+LoginLogger::log(
+    $student,
+    $request->latitude,
+    $request->longitude
+);
 
         return redirect('/');
     }
@@ -88,6 +98,11 @@ class StudentAuthController extends Controller
         'student_email' => $student->email,
         'student_role'  => $student->role,
     ]);
+    LoginLogger::log(
+        $student,
+        $request->latitude,
+        $request->longitude
+    );
 
     return redirect('/')
         ->with('success', 'Logged in successfully as '.$student->name);

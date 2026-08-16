@@ -43,7 +43,8 @@ class Customer extends Authenticatable
         'state',
         'country',
         'slug_id',
-        'role'
+        'role',
+        'student_enrollment_id'
     ];
 
     protected $hidden = [
