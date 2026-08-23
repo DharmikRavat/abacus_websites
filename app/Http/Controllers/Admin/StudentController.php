@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\StudentCertification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = Customer::where('role', 'student')
+        ->with('certifications')
             ->latest()
             ->get();
 
@@ -348,8 +350,313 @@ class StudentController extends Controller
     public function update(Request $request, string $id)
     {
         $student = Customer::where('role', 'student')
-            ->findOrFail($id);
+        ->findOrFail($id);
 
+    /*
+    |--------------------------------------------------------------------------
+    | SAVE / UPDATE CERTIFICATION
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->boolean('save_certification')) {
+
+        $request->validate([
+
+            'student_name' => 'nullable|string|max:255',
+
+            'parents_name' => 'nullable|string|max:255',
+
+            'mobile_no' => 'nullable|string|max:20',
+
+            'exam_date' => 'nullable|date',
+
+            'level' => 'nullable|string|max:255',
+
+            'score' => 'nullable|numeric',
+
+            'result' => 'nullable|string|max:255',
+
+            'address' => 'nullable|string',
+
+            'receiver_name' => 'nullable|string|max:255',
+
+            'receiver_contact' => 'nullable|string|max:255',
+
+            'abacus_trainer_name' => 'nullable|string|max:255',
+
+            'certificate_date' => 'nullable|date',
+
+            'dispatched_date' => 'nullable|date',
+
+            'dispatched_id' => 'nullable|string|max:255',
+
+            'received_date' => 'nullable|date',
+
+            'remark' => 'nullable|string',
+
+            'address_image' =>
+                'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+
+            'certificate_image' =>
+                'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+
+            'certification_id' => 'nullable|integer',
+
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find Existing Certification / Create New
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('certification_id')) {
+
+            $certification = StudentCertification::where(
+                'id',
+                $request->certification_id
+            )
+                ->where(
+                    'student_id',
+                    $student->id
+                )
+                ->firstOrFail();
+
+        } else {
+
+            $certification = new StudentCertification();
+
+            $certification->student_id = $student->id;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Certification Details
+        |--------------------------------------------------------------------------
+        */
+
+        $certification->student_name =
+            $request->student_name ?: $student->name;
+
+        $certification->parents_name =
+            $request->parents_name;
+
+        $certification->mobile_no =
+            $request->mobile_no ?: $student->mobile;
+
+        $certification->exam_date =
+            $request->exam_date;
+
+        $certification->level =
+            $request->level;
+
+        $certification->score =
+            $request->score;
+
+        $certification->result =
+            $request->result;
+
+        $certification->address =
+            $request->address;
+
+        $certification->receiver_name =
+            $request->receiver_name;
+
+        $certification->receiver_contact =
+            $request->receiver_contact;
+
+        $certification->abacus_trainer_name =
+            $request->abacus_trainer_name;
+
+        $certification->certificate_date =
+            $request->certificate_date;
+
+        $certification->dispatched_date =
+            $request->dispatched_date;
+
+        $certification->dispatched_id =
+            $request->dispatched_id;
+
+        $certification->received_date =
+            $request->received_date;
+
+        $certification->remark =
+            $request->remark;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Directory
+        |--------------------------------------------------------------------------
+        */
+
+        $uploadPath = public_path('student-certificates');
+
+        if (!is_dir($uploadPath)) {
+
+            mkdir(
+                $uploadPath,
+                0755,
+                true
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Address Image
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('address_image')) {
+
+            /*
+            | Delete old address image
+            */
+
+            if (
+                $certification->address_image &&
+                file_exists(
+                    public_path($certification->address_image)
+                )
+            ) {
+
+                unlink(
+                    public_path($certification->address_image)
+                );
+            }
+
+
+            /*
+            | Upload new image
+            */
+
+            $file = $request->file('address_image');
+
+            $filename =
+                'address_' .
+                time() .
+                '_' .
+                uniqid() .
+                '.' .
+                $file->getClientOriginalExtension();
+
+            $file->move(
+                $uploadPath,
+                $filename
+            );
+
+            $certification->address_image =
+                'student-certificates/' . $filename;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Certificate Image
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('certificate_image')) {
+
+            /*
+            | Delete old certificate image
+            */
+
+            if (
+                $certification->certificate_image &&
+                file_exists(
+                    public_path($certification->certificate_image)
+                )
+            ) {
+
+                unlink(
+                    public_path($certification->certificate_image)
+                );
+            }
+
+
+            /*
+            | Upload new image
+            */
+
+            $file = $request->file('certificate_image');
+
+            $filename =
+                'certificate_' .
+                time() .
+                '_' .
+                uniqid() .
+                '.' .
+                $file->getClientOriginalExtension();
+
+            $file->move(
+                $uploadPath,
+                $filename
+            );
+
+            $certification->certificate_image =
+                'student-certificates/' . $filename;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save Certification
+        |--------------------------------------------------------------------------
+        */
+
+        $certification->save();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get All Certifications
+        |--------------------------------------------------------------------------
+        */
+
+        $certifications =
+            StudentCertification::where(
+                'student_id',
+                $student->id
+            )
+            ->latest()
+            ->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' =>
+                $request->filled('certification_id')
+                    ? 'Certification updated successfully'
+                    : 'Certification added successfully',
+
+            'certification' =>
+                $certification,
+
+            'certifications' =>
+                $certifications,
+
+        ]);
+    }
+
+        /*
+        |--------------------------------------------------------------------------
+        | NORMAL STUDENT UPDATE
+        |--------------------------------------------------------------------------
+        */
+    
+        // Your existing student update code continues here...
         $request->validate([
 
             'name'              => 'required|string|max:255',
@@ -499,7 +806,6 @@ class StudentController extends Controller
             'student' => $student,
         ]);
     }
-
     /**
      * Remove specified student.
      */

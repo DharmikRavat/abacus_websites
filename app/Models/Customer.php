@@ -6,7 +6,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\StudentCertification;
 
 // class Customer extends Authenticatable implements JWTSubject
 class Customer extends Authenticatable
@@ -50,6 +51,7 @@ class Customer extends Authenticatable
     protected $hidden = [
         'api_token'
     ];
+    
 
 
     /**
@@ -95,6 +97,14 @@ class Customer extends Authenticatable
         return $mobile;
     }
 
+      /**
+     * Get the certification records for the student.
+     */
+    public function certifications(): HasMany
+    {
+        return $this->hasMany(StudentCertification::class, 'student_id');
+    }
+
    
     /**
      * Get the user associated with the Customer
@@ -107,4 +117,6 @@ class Customer extends Authenticatable
             $query->where(['user_id' => $this->id, 'status' => 'success']);
         })->count() ? true : false;
     }
+    
 }
+
