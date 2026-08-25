@@ -70,6 +70,7 @@
                     </svg>
                     Academy Programs
                 </div>
+
 <!-- Program Writeup -->
 <div class="nav-item {{ request()->routeIs('admin.program-writeup.*') ? 'active' : '' }}"
     onclick="window.location='{{ route('admin.program-writeup.index') }}'"
@@ -171,6 +172,16 @@
                     </svg>
                     Feedback
                 </div>
+                <div class="nav-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
+     onclick="window.location='{{ route('admin.products.index') }}'"
+     style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24">
+        <path d="M20 7h-3V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 5h6v2H9V5zm9 14H6v-8h12v8z"/>
+    </svg>
+
+    Products
+</div>
             </div>
         @endif
 
@@ -456,28 +467,7 @@
     </div>
 
     <!-- Certificate -->
-    <div class="nav-item 
-        {{ request()->routeIs(Auth::user()->role == 'teacher' 
-            ? 'teacher.certification.*' 
-            : 'admin.certification.*') ? 'active' : '' }}"
 
-        onclick="window.location='{{ Auth::user()->role == 'teacher' 
-            ? route('teacher.certification.index') 
-            : route('admin.certification.index') }}'"
-
-        style="cursor: pointer;">
-
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-
-            <rect x="3" y="3" width="14" height="18" rx="2" />
-            <path d="M6 7h8M6 10h8M6 13h6" />
-            <circle cx="19" cy="15" r="2.5" />
-            <path d="M19 17.5v3l-1.5-1-1.5 1v-3" />
-        </svg>
-
-        Certificate
-    </div>
 </div>
         @endif
 

@@ -27,7 +27,6 @@ use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AcademyProgramController;
 use App\Http\Controllers\Admin\FeeTypeController;
 use App\Http\Controllers\Admin\BatchController;
-use App\Http\Controllers\Admin\CertificationController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\FranchisePageController;
@@ -50,6 +49,8 @@ use App\Http\Controllers\Admin\TeacherAdmissionController;
 use App\Http\Controllers\Admin\TermsConditionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserLoginLogController;
+use App\Http\Controllers\Admin\CertificationController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\StudentAuthController;
 use App\Http\Controllers\Client\StudentDashboardController;
@@ -246,11 +247,7 @@ Route::post('/program-writeup', [ProgramWriteupController::class, 'update'])
 
     Route::get('/report/export', [ReportController::class, 'export'])
         ->name('report.export');
-    Route::resource('certification', CertificationController::class);
-    Route::get(
-        'certification/view/{id}',
-        [CertificationController::class, 'showCertificate']
-    );
+
     Route::get('/activity-log', [UserLoginLogController::class, 'index'])
     ->name('activity-log.index');
 
@@ -260,6 +257,7 @@ Route::get('/activity-log/{userLoginLog}', [UserLoginLogController::class, 'show
     Route::resource('student-fees', StudentFeeRecordController::class);
     Route::resource('teacher-fees', TeacherAdmissionController::class);
     Route::resource('student-leads', StudentLeadController::class);
+    Route::resource('products', ProductController::class);
 
     /*
     |--------------------------------------------------------------------------
@@ -316,6 +314,6 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
 
         Route::resource('report', ReportController::class);
 
-        Route::resource('certification', CertificationController::class);
+
     });
 });

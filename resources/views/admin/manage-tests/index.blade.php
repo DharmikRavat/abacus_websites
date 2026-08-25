@@ -449,6 +449,33 @@ function render(list) {
                     <div class="actions-cell"
                          style="justify-content:flex-end;gap:10px">
 
+        {{-- Share --}}
+        <button class="btn-icon"
+                title="Share"
+                onclick="shareSchedule(${s.id})">
+            <svg width="16"
+                 height="16"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <circle cx="18" cy="5" r="3"/>
+                <circle cx="6" cy="12" r="3"/>
+                <circle cx="18" cy="19" r="3"/>
+
+                <line x1="8.59" y1="13.51"
+                      x2="15.42" y2="17.49"/>
+
+                <line x1="15.41" y1="6.51"
+                      x2="8.59" y2="10.49"/>
+
+            </svg>
+        </button>
+
+
                         <button class="btn-icon"
                                 onclick="openEditModal(${s.id})">
 
@@ -755,6 +782,87 @@ document.querySelectorAll('input[name="test_type"]')
                   `;
         });
     });
+/* =====================================================
+   SHARE SCHEDULE
+===================================================== */
+
+async function shareSchedule(id) {
+
+    const schedule = schedules.find(x => x.id === id);
+
+    if (!schedule) {
+        alert('Schedule not found');
+        return;
+    }
+
+    const shareUrl =
+        `https://abacus.moyalr.com/`;
+
+const shareText = `
+Test: ${schedule.test_type}
+Level: ${schedule.exam_level}
+Exam Type: ${schedule.schedule_exam_type
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, char => char.toUpperCase())}
+Date: ${formatDate(schedule.schedule_date)}
+Questions: ${schedule.no_of_questions}
+Duration: ${schedule.schedule_time} Minutes
+Password: ${schedule.schedule_password}
+`.trim();
+
+    /* Native Share */
+    if (navigator.share) {
+
+        try {
+
+            await navigator.share({
+                title: `${schedule.test_type} - ${schedule.exam_level}`,
+                text: shareText,
+                url: shareUrl
+            });
+
+        } catch (error) {
+
+            // User cancelled sharing
+            if (error.name !== 'AbortError') {
+                console.error('Share failed:', error);
+            }
+
+        }
+
+        return;
+    }
+
+    /* Desktop fallback - Copy to clipboard */
+
+    const copyText =
+        `${shareText}\n\nOpen Test:\n${shareUrl}`;
+
+    try {
+
+        await navigator.clipboard.writeText(copyText);
+
+        alert('Test details copied to clipboard!');
+
+    } catch (error) {
+
+        // Older browser fallback
+        const textarea = document.createElement('textarea');
+
+        textarea.value = copyText;
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+
+        document.execCommand('copy');
+
+        textarea.remove();
+
+        alert('Test details copied to clipboard!');
+
+    }
+}
 
 /* =====================================================
    HELPERS
