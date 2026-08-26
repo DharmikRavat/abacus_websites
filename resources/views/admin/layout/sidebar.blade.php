@@ -442,9 +442,40 @@
 
         Manage Test/Exam
     </div>
+<!-- Test Report -->
+<div class="nav-item 
+    {{ request()->routeIs('teacher.test-reports.*') ? 'active' : '' }}"
+    
+    onclick="window.location='{{ route('teacher.test-reports.index') }}'"
+    
+    style="cursor: pointer;">
 
+    <svg viewBox="0 0 24 24">
+        <path d="M4 19V5a2 2 0 012-2h12a2 2 0 012 2v14" />
+        <path d="M8 7h8M8 11h8M8 15h5" />
+        <path d="M16 16l2 2 4-4" />
+    </svg>
+
+    Test Report
+</div>
+
+<div class="nav-item 
+    {{ request()->routeIs('teacher.exam-results.*') ? 'active' : '' }}"
+    
+    onclick="window.location='{{ route('teacher.exam-results.index') }}'"
+    
+    style="cursor: pointer;">
+
+    <svg viewBox="0 0 24 24">
+        <path d="M4 4h16v16H4z" />
+        <path d="M8 8h8M8 12h5M8 16h8" />
+        <path d="M16 11l2 2 3-4" />
+    </svg>
+
+    Exam Results
+</div>
     <!-- Reports -->
-    <div class="nav-item 
+    {{-- <div class="nav-item 
         {{ request()->routeIs(Auth::user()->role == 'teacher' 
             ? 'teacher.report.*' 
             : 'admin.report.*') ? 'active' : '' }}"
@@ -464,7 +495,7 @@
         </svg>
 
         Reports
-    </div>
+    </div> --}}
 
     <!-- Certificate -->
 

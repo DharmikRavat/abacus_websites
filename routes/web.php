@@ -50,7 +50,9 @@ use App\Http\Controllers\Admin\TermsConditionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserLoginLogController;
 use App\Http\Controllers\Admin\CertificationController;
+use App\Http\Controllers\Admin\ExamResultController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\TestReportController ;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\StudentAuthController;
 use App\Http\Controllers\Client\StudentDashboardController;
@@ -314,6 +316,31 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
 
         Route::resource('report', ReportController::class);
 
+        Route::get(
+            '/test-reports',
+            [TestReportController::class, 'index']
+        )->name('test-reports.index');
+        
+        Route::post(
+            '/test-reports',
+            [TestReportController::class, 'store']
+        )->name('test-reports.store');
+        
+        Route::put(
+            '/test-reports/{id}',
+            [TestReportController::class, 'update']
+        )->name('test-reports.update');
+        
+        Route::delete(
+            '/test-reports/{id}',
+            [TestReportController::class, 'destroy']
+        )->name('test-reports.destroy');
+
+        Route::get('/exam-results', [ExamResultController::class, 'index'])
+        ->name('exam-results.index');
+    
+    Route::post('/exam-results', [ExamResultController::class, 'store'])
+        ->name('exam-results.store');
 
     });
 });

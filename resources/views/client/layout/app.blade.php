@@ -137,6 +137,109 @@
             color: #fff;
             opacity: 0.9;
         }
+.header-banner {
+    width: 100%;
+    height: 180px;
+
+    background-image: url('{{ asset('client/img/banner/bgindia.jpeg') }}');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    position: relative;
+}
+.header-banner-overlay {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.header-banner-content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-banner-logo {
+    display: flex;
+    align-items: center;
+}
+
+.header-login {
+    display: flex;
+    align-items: center;
+}
+
+.header-login .login-btn {
+    margin-left: 0;
+}
+@media (max-width: 768px) {
+    .header-banner {
+        height: 140px;
+    }
+
+    .header-banner-logo img {
+        height: 80px;
+        max-width: 220px;
+    }
+}
+
+.mainmenu-area {
+    float: right !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.mainmenu {
+    text-align: right !important;
+}
+
+.mainmenu nav {
+    text-align: right !important;
+}
+
+.mainmenu nav ul {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+}
+
+.mainmenu nav ul li {
+    float: none !important;
+    display: inline-block !important;
+}
+
+.mainmenu nav ul li a {
+    white-space: nowrap !important;
+}
+
+.mainmenu nav ul li a i {
+    margin-right: 7px !important;
+}
+/* Active menu item */
+#nav > li.active > a,
+#nav > li > a.active {
+    background: #F4A012 !important;
+    color: #fff !important;
+    border-radius: 50px !important;
+    padding: 7px 18px !important;
+}
+
+/* Keep icon white */
+#nav > li.active > a i,
+#nav > li > a.active i {
+    color: #fff !important;
+}
+
+/* Smooth effect */
+#nav > li > a {
+    transition: all 0.3s ease;
+}
     </style>
 
 </head>
@@ -272,6 +375,17 @@
             }
         }
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const currentUrl = window.location.href;
+
+    document.querySelectorAll('#nav > li > a').forEach(function (link) {
+        if (link.href === currentUrl) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
     @yield('script')
     @php
     $whatsappMessage = urlencode('Hello India Abacus Academy, I would like to enquire about a demo class. Please share the details and available timings.');
