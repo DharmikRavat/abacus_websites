@@ -379,6 +379,75 @@
         }
 
     }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.65);
+    }
+    .modal-content {
+        background-color: #fff;
+        margin: 8% auto;
+        padding: 25px;
+        width: 90%;
+        max-width: 450px;
+        border-radius: 12px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    .modal-header h3 { margin: 0; }
+    .close {
+        font-size: 32px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #999;
+    }
+    .close:hover { color: #e74c3c; }
+    .modal-footer {
+        margin-top: 25px;
+        text-align: right;
+    }
+    .modal-footer button {
+        padding: 10px 20px;
+        margin-left: 10px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-danger { background: #e74c3c; color: white; }
+
+    @media(max-width: 768px){
+        .action-grid{ grid-template-columns: repeat(3,1fr); gap: 10px; }
+        .action-card{ padding: 16px 8px; border-radius: 18px; }
+        .action-icon{ width: 46px; height: 46px; font-size: 1rem; border-radius: 14px; }
+        .action-card strong{ font-size: .7rem; }
+        .action-card small{ display: none; }
+    }
+
+
+    .bg-red {
+    background: #fee2e2;
+    color: #dc2626;
+}
+.bg-orange {
+    background: #ffedd5;
+    color: #c2410c;
+}
+.bg-indigo {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
 </style>
 @endsection
 
@@ -434,89 +503,7 @@
     </div> --}}
 
 
-    {{-- REGISTER SECTION --}}
-    <div class="section-title mt-10">
-        Register For Classes
-    </div>
 
-    <div class="register-grid">
-
-        {{-- DEMO --}}
-        <a target="_blank"
-           href="https://docs.google.com/forms/d/e/1FAIpQLSe0a0tQ95QjKLkLctXB29shwSOLbD__x666tqKgbBjLti-iNA/viewform"
-           class="register-card">
-
-            <div class="register-top">
-
-                <div class="register-icon bg-violet">
-                    <i class="fa fa-pencil"></i>
-                </div>
-
-                <div class="register-arrow">
-                    <i class="fa fa-arrow-right"></i>
-                </div>
-
-            </div>
-
-            <h4>Demo Registration</h4>
-
-            <p>
-                Register for a free demo class and experience our learning platform.
-            </p>
-
-        </a>
-
-        {{-- ADMISSION --}}
-        <a target="_blank"
-           href="https://docs.google.com/forms/d/e/1FAIpQLSftide7sN1hbKSKkNJZWauvf2xGm0qZ6Ix9vtRGDrk_oZvjnw/viewform"
-           class="register-card">
-
-            <div class="register-top">
-
-                <div class="register-icon bg-blue">
-                    <i class="fa fa-graduation-cap"></i>
-                </div>
-
-                <div class="register-arrow">
-                    <i class="fa fa-arrow-right"></i>
-                </div>
-
-            </div>
-
-            <h4>Admission Registration</h4>
-
-            <p>
-                Complete your admission process and join our academy today.
-            </p>
-
-        </a>
-
-        {{-- OLYMPIAD --}}
-        <a target="_blank"
-           href="https://docs.google.com/forms/d/e/1FAIpQLSfOxx723zZVFXvsaixBvH5W1r3ZHllI6NjnpPoVbZ5IfA_3Qg/closedform"
-           class="register-card">
-
-            <div class="register-top">
-
-                <div class="register-icon bg-amber">
-                    <i class="fa fa-trophy"></i>
-                </div>
-
-                <div class="register-arrow">
-                    <i class="fa fa-arrow-right"></i>
-                </div>
-
-            </div>
-
-            <h4>Olympiad Registration</h4>
-
-            <p>
-                Participate in olympiad competitions and improve your ranking.
-            </p>
-
-        </a>
-
-    </div>
 
     {{-- QUICK ACTIONS --}}
     <div class="section-title mt-4">
@@ -533,7 +520,7 @@
             <small>Start Learning</small>
         </a>
 
-        <a href="#" class="action-card">
+        <a href="{{ route('online.assessment', ['type' => 'test']) }}" class="action-card">
             <div class="action-icon bg-violet">
                 <i class="fa fa-file-text"></i>
             </div>
@@ -542,7 +529,7 @@
             <small>Start Test</small>
         </a>
 
-        <a href="#" class="action-card">
+        <a href="{{ route('online.assessment', ['type' => 'exam']) }}" class="action-card">
             <div class="action-icon bg-blue">
                 <i class="fa fa-graduation-cap"></i>
             </div>
@@ -552,23 +539,44 @@
         </a>
 
 
-        <a href="{{ route('score-sheet') }}" class="action-card">
+        <a href="{{ route('score-sheet', ['tab' => 'practice']) }}" class="action-card">
             <div class="action-icon bg-amber">
                 <i class="fa fa-trophy"></i>
             </div>
-
-            <strong>Scores</strong>
+            <strong>Practice Score</strong>
             <small>View Results</small>
         </a>
 
+        <a href="{{ route('score-sheet', ['tab' => 'test']) }}" class="action-card">
+            <div class="action-icon bg-amber">
+                <i class="fa fa-trophy"></i>
+            </div>
+            <strong>Online Test Score</strong>
+            <small>View Results</small>
+        </a>
+
+        <a href="{{ route('score-sheet', ['tab' => 'exam']) }}" class="action-card">
+            <div class="action-icon bg-amber">
+                <i class="fa fa-trophy"></i>
+            </div>
+            <strong>Online Exam Score</strong>
+            <small>View Results</small>
+        </a>
 
         <a href="{{ route('choose-user') }}" class="action-card">
             <div class="action-icon bg-orange">
                 <i class="fa fa-users"></i>
             </div>
-
             <strong>Choose User</strong>
             <small>Switch User</small>
+        </a>
+
+        <a href="{{ route('profile') }}" class="action-card">
+            <div class="action-icon bg-indigo">
+                <i class="fa fa-user"></i>
+            </div>
+            <strong>View Profile</strong>
+            <small>Manage Account</small>
         </a>
 
         <a href="{{ route('add-user') }}" class="action-card">
@@ -580,7 +588,77 @@
             <small>New Profile</small>
         </a>
 
+        <a href="{{ route('products.index') }}" class="action-card">
+            <div class="action-icon bg-blue">
+                <i class="fa fa-shopping-bag"></i>
+            </div>
+            <strong>View Products</strong>
+            <small>Browse items</small>
+        </a>
+
+        <a href="{{ route('feedbacks.create') }}" class="action-card">
+            <div class="action-icon bg-emerald">
+                <i class="fa fa-comments"></i>
+            </div>
+            <strong>Submit Feedback</strong>
+            <small>Share your thoughts</small>
+        </a>
+
     </div>
+ {{-- SETTINGS SECTION --}}
+        <div class="section-title mt-4">Setting</div>
+
+<div class="action-grid">
+
+    <!-- Reset Profiles -->
+    <a href="#" onclick="showResetModal('profile')" class="action-card">
+        <div class="action-icon bg-violet">
+                <i class="fa fa-trophy"></i>
+            </div>
+        <strong>Reset Profiles</strong>
+        <small>Clear User Data</small>
+    </a>
+
+    <!-- Reset Scores -->
+    <a href="#" onclick="showResetModal('score')" class="action-card">
+        <div class="action-icon bg-orange">
+            <i class="fa fa-trophy"></i>
+        </div>
+        <strong>Reset Scores</strong>
+        <small>Delete Practice Data Only</small>
+    </a>
+
+    <!-- Tricks & Formula -->
+    <a href="{{ route('tricks-formula') }}" class="action-card">
+         <div class="action-icon bg-violet">
+                <i class="fa fa-trophy"></i>
+            </div>
+        <strong>Tricks & Formula</strong>
+        <small>Quick Tips</small>
+    </a>
+
+</div>
+
+        <!-- Reset Modal -->
+        <div id="resetModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Confirm Reset</h3>
+                    <span class="close" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+                    <button id="confirmBtn" class="btn btn-danger">Yes, Reset</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 
 
 </div>
@@ -588,3 +666,68 @@
 
 
 @endsection
+@section('script')
+<script>
+let currentResetType = '';
+
+function showResetModal(type) {
+    currentResetType = type;
+    const modal = document.getElementById('resetModal');
+    const title = document.getElementById('modalTitle');
+    const message = document.getElementById('modalMessage');
+    const confirmBtn = document.getElementById('confirmBtn');
+
+    if (type === 'profile') {
+        title.textContent = 'Reset Profiles';
+        message.innerHTML = 'Are you sure you want to reset all profiles?<br><strong>This action cannot be undone.</strong>';
+    } else if (type === 'score') {
+        title.textContent = 'Reset Scores';
+        message.innerHTML = 'This will delete <strong>ONLY practice data</strong>.<br><br>Are you sure you want to proceed?<br><strong>This action cannot be undone.</strong>';
+    }
+
+    modal.style.display = 'block';
+
+    confirmBtn.onclick = function() {
+        performReset(currentResetType);
+    };
+}
+
+function closeModal() {
+    document.getElementById('resetModal').style.display = 'none';
+}
+
+function performReset(type) {
+    closeModal();
+
+    if (type === 'profile') {
+        alert('✅ Profiles reset successfully!');
+
+    } else if (type === 'score') {
+        fetch('{{ route("reset-practice-scores") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✅ Practice data reset successfully!\n(Only practice scores hidden)');
+            } else {
+                alert('⚠️ Could not reset scores: ' + data.message);
+            }
+        })
+        .catch(err => {
+            alert('⚠️ Unable to process reset request.');
+        });
+    }
+}
+
+// Close when clicking outside modal
+window.onclick = function(event) {
+    const modal = document.getElementById('resetModal');
+    if (event.target === modal) closeModal();
+};
+</script>

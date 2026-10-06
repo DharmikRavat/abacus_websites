@@ -18,6 +18,31 @@
         margin-bottom: 24px;
     }
 
+    .back-arrow-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #334155;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+        flex-shrink: 0;
+    }
+
+    .back-arrow-btn:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff !important;
+        transform: translateX(-3px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
     .page-title{
         font-size: 2rem;
         font-weight: 800;
@@ -208,16 +233,18 @@
     <div class="container">
 
         {{-- PAGE HEADER --}}
-        <div class="page-header">
-
-            <h1 class="page-title">
-                Score
-            </h1>
-
-            <p class="page-subtitle">
-                View all exams and test scores.
-            </p>
-
+        <div class="page-header d-flex align-items-center gap-3">
+            <a href="{{ route('dashboard.index') }}" class="back-arrow-btn" title="Back to Dashboard">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="page-title">
+                    Score
+                </h1>
+                <p class="page-subtitle">
+                    View all exams and test scores.
+                </p>
+            </div>
         </div>
 
         {{-- SCORE CARD --}}
@@ -226,17 +253,23 @@
             {{-- TABS --}}
             <div class="score-tabs">
 
+                @if(request('tab', 'practice') == 'practice')
                 <button class="score-tab active" data-tab="practice">
                     Practice Score
                 </button>
+                @endif
 
-                <button class="score-tab" data-tab="test">
+                @if(request('tab') == 'test')
+                <button class="score-tab active" data-tab="test">
                     Online Test Score
                 </button>
+                @endif
 
-                <button class="score-tab" data-tab="exam">
+                @if(request('tab') == 'exam')
+                <button class="score-tab active" data-tab="exam">
                     Online Exam Score
                 </button>
+                @endif
 
             </div>
 
@@ -251,21 +284,7 @@
 
                     <select class="filter-control" id="modeFilter">
 
-                        <option value="">
-                            All Modes
-                        </option>
-
-                        <option value="Easy">
-                            Easy
-                        </option>
-
-                        <option value="Medium">
-                            Medium
-                        </option>
-
-                        <option value="Hard">
-                            Hard
-                        </option>
+                        <option value="">All Modes</option>
 
                     </select>
 
@@ -311,6 +330,11 @@
 
                 </div>
 
+                <div class="filter-box">
+                    <label class="filter-label">Filter By Date</label>
+                    <input type="date" class="filter-control" id="dateFilter">
+                </div>
+
             </div>
 
             {{-- TABLE --}}
@@ -324,6 +348,7 @@
                             <th>Mode</th>
                             <th>Level</th>
                             <th>Date</th>
+                            <th>Time</th>
                             <th>Total</th>
                             <th>Correct</th>
                             <th>Wrong</th>
@@ -354,88 +379,12 @@
 <script>
 
     const scoreData = {
-
-        practice: [
-
-            {
-                type: 'Practice Score',
-                mode: 'Easy',
-                level: 'Level 0',
-                date: '29 May 2026',
-                total: 50,
-                correct: 42,
-                wrong: 5,
-                skipped: 3
-            },
-
-            {
-                type: 'Practice Score',
-                mode: 'Medium',
-                level: 'Level 1',
-                date: '27 May 2026',
-                total: 60,
-                correct: 48,
-                wrong: 8,
-                skipped: 4
-            }
-
-        ],
-
-        test: [
-
-            {
-                type: 'Online Test Score',
-                mode: 'Easy',
-                level: 'Level 2',
-                date: '24 May 2026',
-                total: 80,
-                correct: 70,
-                wrong: 6,
-                skipped: 4
-            },
-
-            {
-                type: 'Online Test Score',
-                mode: 'Hard',
-                level: 'Level 3',
-                date: '20 May 2026',
-                total: 100,
-                correct: 78,
-                wrong: 14,
-                skipped: 8
-            }
-
-        ],
-
-        exam: [
-
-            {
-                type: 'Online Exam Score',
-                mode: 'Medium',
-                level: 'Level 4',
-                date: '15 May 2026',
-                total: 150,
-                correct: 120,
-                wrong: 20,
-                skipped: 10
-            },
-
-            {
-                type: 'Online Exam Score',
-                mode: 'Hard',
-                level: 'Level 5',
-                date: '10 May 2026',
-                total: 200,
-                correct: 160,
-                wrong: 25,
-                skipped: 15
-            }
-
-        ]
-
+        practice: {!! json_encode($practiceArray ?? []) !!},
+        test: {!! json_encode($testArray ?? []) !!},
+        exam: {!! json_encode($examArray ?? []) !!}
     };
 
-    let currentTab = 'practice';
+    let currentTab = "{{ request('tab', 'practice') }}";
 
     const tableBody = document.getElementById('scoreTableBody');
 
@@ -444,89 +393,108 @@
     const modeFilter = document.getElementById('modeFilter');
 
     const levelFilter = document.getElementById('levelFilter');
+    const dateFilter = document.getElementById('dateFilter');
 
     function renderTable(){
 
         let data = scoreData[currentTab];
 
         const selectedMode = modeFilter.value;
-
         const selectedLevel = levelFilter.value;
+        const selectedDate = dateFilter.value;
 
         data = data.filter(item => {
 
+            let itemDate = item.raw_date;
+            if (!itemDate && item.date) {
+                let d = new Date(item.date);
+                if (!isNaN(d)) {
+                    let month = '' + (d.getMonth() + 1);
+                    let day = '' + d.getDate();
+                    let year = d.getFullYear();
+                    if (month.length < 2) month = '0' + month;
+                    if (day.length < 2) day = '0' + day;
+                    itemDate = [year, month, day].join('-');
+                }
+            }
+
             return (
                 (selectedMode === '' || item.mode === selectedMode) &&
-                (selectedLevel === '' || item.level === selectedLevel)
+                (selectedLevel === '' || item.level === selectedLevel) &&
+                (selectedDate === '' || itemDate === selectedDate)
             );
 
         });
 
         if(data.length === 0){
-
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         <div class="empty">
                             No Data Found
                         </div>
                     </td>
                 </tr>
             `;
-
             return;
         }
 
         tableBody.innerHTML = '';
 
         data.forEach(item => {
+            if (item.is_pending) {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty" style="color: #ea580c; background: #fff7ed; padding: 15px; border-radius: 8px;">
+                                <i class="fa fa-clock" style="margin-right: 5px;"></i>
+                                Result Pending<br>
+                                <span style="font-size: 13px; color: #9a3412;">
+                                    Your Online Exam was completed successfully.<br>
+                                    Your result will be available on: <strong>${item.result_available_at}</strong>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let total = item.is_visible == 0 ? '-' : item.total;
+                let correct = item.is_visible == 0 ? '-' : item.correct;
+                let wrong = item.is_visible == 0 ? '-' : item.wrong;
+                let skipped = item.is_visible == 0 ? '-' : item.skipped;
 
-            tableBody.innerHTML += `
-
-                <tr>
-
-                    <td>
-                        <span class="badge badge-type">
-                            ${item.type}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="badge badge-mode">
-                            ${item.mode}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="badge badge-level">
-                            ${item.level}
-                        </span>
-                    </td>
-
-                    <td>${item.date}</td>
-
-                    <td>
-                        <strong>${item.total}</strong>
-                    </td>
-
-                    <td class="correct">
-                        ${item.correct}
-                    </td>
-
-                    <td class="wrong">
-                        ${item.wrong}
-                    </td>
-
-                    <td class="skip">
-                        ${item.skipped}
-                    </td>
-
-                </tr>
-
-            `;
-
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><span class="badge badge-type">${item.type}</span></td>
+                        <td><span class="badge badge-mode">${item.mode}</span></td>
+                        <td><span class="badge badge-level">${item.level}</span></td>
+                        <td>${item.date}</td>
+                        <td>${item.time ?? '-'}</td>
+                        <td><strong>${total}</strong></td>
+                        <td class="correct">${correct}</td>
+                        <td class="wrong">${wrong}</td>
+                        <td class="skip">${skipped}</td>
+                    </tr>
+                `;
+            }
         });
 
+    }
+
+    function updateModeOptions() {
+        let options = '<option value="">All Modes</option>';
+        if (currentTab === 'practice') {
+            options += '<option value="Easy">Easy</option>';
+            options += '<option value="Medium">Medium</option>';
+            options += '<option value="Hard">Hard</option>';
+        } else if (currentTab === 'test') {
+            options += '<option value="Weekly">Weekly</option>';
+            options += '<option value="Monthly">Monthly</option>';
+        } else if (currentTab === 'exam') {
+            options += '<option value="Olympiad">Olympiad</option>';
+            options += '<option value="Final Exam">Final Exam</option>';
+        }
+        modeFilter.innerHTML = options;
     }
 
     tabs.forEach(tab => {
@@ -539,8 +507,10 @@
 
             currentTab = this.dataset.tab;
 
+            updateModeOptions();
             modeFilter.value = '';
             levelFilter.value = '';
+            dateFilter.value = '';
 
             renderTable();
 
@@ -549,9 +519,10 @@
     });
 
     modeFilter.addEventListener('change', renderTable);
-
     levelFilter.addEventListener('change', renderTable);
+    dateFilter.addEventListener('change', renderTable);
 
+    updateModeOptions();
     renderTable();
 
 </script>

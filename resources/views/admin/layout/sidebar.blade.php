@@ -2,9 +2,8 @@
     <div class="sidebar-logo">
         {{-- <div class="logo-mark"> --}}
 
-            <img src="{{ asset('storage/' . $settings->company_logo) }}" alt="Logo"
-                style="height:40px; width:auto; object-fit:contain;">
-
+<img src="{{ asset($settings->company_logo) }}" alt="Logo"
+     style="height:40px; width:auto; object-fit:contain;">
             {{--
         </div> --}}
         <span class="logo-text">{{ $settings->company_name }}</span>
@@ -14,13 +13,13 @@
     <nav class="nav-scroll">
         <div class="nav-section">
             <div class="nav-label">Overview</div>
-    <div class="nav-item 
+    <div class="nav-item
         {{ request()->routeIs(auth()->user()->role == 'teacher' ? 'teacher.dashboard' : 'admin.dashboard') ? 'active' : '' }}"
-        
-        onclick="window.location='{{ auth()->user()->role == 'teacher' 
-            ? route('teacher.dashboard') 
-            : route('admin.dashboard') }}'" 
-        
+
+        onclick="window.location='{{ auth()->user()->role == 'teacher'
+            ? route('teacher.dashboard')
+            : route('admin.dashboard') }}'"
+
         style="cursor: pointer;">
 
                 <svg viewBox="0 0 24 24">
@@ -234,13 +233,13 @@
         <div class="nav-section">
             <div class="nav-label">Academics</div>
 <!-- Students -->
-<div class="nav-item 
-    {{ request()->routeIs(Auth::user()->role == 'teacher' 
-        ? 'teacher.students.*' 
+<div class="nav-item
+    {{ request()->routeIs(Auth::user()->role == 'teacher'
+        ? 'teacher.students.*'
         : 'admin.students.*') ? 'active' : '' }}"
 
-    onclick="window.location='{{ Auth::user()->role == 'teacher' 
-        ? route('teacher.students.index') 
+    onclick="window.location='{{ Auth::user()->role == 'teacher'
+        ? route('teacher.students.index')
         : route('admin.students.index') }}'"
 
     style="cursor: pointer;">
@@ -269,13 +268,13 @@
 @endif
 
 <!-- Attendance -->
-<div class="nav-item 
-    {{ request()->routeIs(Auth::user()->role == 'teacher' 
-        ? 'teacher.attendance.*' 
+<div class="nav-item
+    {{ request()->routeIs(Auth::user()->role == 'teacher'
+        ? 'teacher.attendance.*'
         : 'admin.attendance.*') ? 'active' : '' }}"
 
-    onclick="window.location='{{ Auth::user()->role == 'teacher' 
-        ? route('teacher.attendance.index') 
+    onclick="window.location='{{ Auth::user()->role == 'teacher'
+        ? route('teacher.attendance.index')
         : route('admin.attendance.index') }}'"
 
     style="cursor: pointer;">
@@ -402,13 +401,13 @@
     <div class="nav-label">Exam</div>
 
     <!-- Score -->
-    <div class="nav-item 
-        {{ request()->routeIs(Auth::user()->role == 'teacher' 
-            ? 'teacher.scores.*' 
+    <div class="nav-item
+        {{ request()->routeIs(Auth::user()->role == 'teacher'
+            ? 'teacher.scores.*'
             : 'admin.scores.*') ? 'active' : '' }}"
 
-        onclick="window.location='{{ Auth::user()->role == 'teacher' 
-            ? route('teacher.scores.index') 
+        onclick="window.location='{{ Auth::user()->role == 'teacher'
+            ? route('teacher.scores.index')
             : route('admin.scores.index') }}'"
 
         style="cursor: pointer;">
@@ -423,13 +422,13 @@
     </div>
 
     <!-- Manage Test / Exam -->
-    <div class="nav-item 
-        {{ request()->routeIs(Auth::user()->role == 'teacher' 
-            ? 'teacher.manage-tests.*' 
+    <div class="nav-item
+        {{ request()->routeIs(Auth::user()->role == 'teacher'
+            ? 'teacher.manage-tests.*'
             : 'admin.manage-tests.*') ? 'active' : '' }}"
 
-        onclick="window.location='{{ Auth::user()->role == 'teacher' 
-            ? route('teacher.manage-tests.index') 
+        onclick="window.location='{{ Auth::user()->role == 'teacher'
+            ? route('teacher.manage-tests.index')
             : route('admin.manage-tests.index') }}'"
 
         style="cursor: pointer;">
@@ -443,11 +442,11 @@
         Manage Test/Exam
     </div>
 <!-- Test Report -->
-<div class="nav-item 
+<div class="nav-item
     {{ request()->routeIs('teacher.test-reports.*') ? 'active' : '' }}"
-    
+
     onclick="window.location='{{ route('teacher.test-reports.index') }}'"
-    
+
     style="cursor: pointer;">
 
     <svg viewBox="0 0 24 24">
@@ -459,11 +458,11 @@
     Test Report
 </div>
 
-<div class="nav-item 
+<div class="nav-item
     {{ request()->routeIs('teacher.exam-results.*') ? 'active' : '' }}"
-    
+
     onclick="window.location='{{ route('teacher.exam-results.index') }}'"
-    
+
     style="cursor: pointer;">
 
     <svg viewBox="0 0 24 24">
@@ -475,13 +474,13 @@
     Exam Results
 </div>
     <!-- Reports -->
-    {{-- <div class="nav-item 
-        {{ request()->routeIs(Auth::user()->role == 'teacher' 
-            ? 'teacher.report.*' 
+    {{-- <div class="nav-item
+        {{ request()->routeIs(Auth::user()->role == 'teacher'
+            ? 'teacher.report.*'
             : 'admin.report.*') ? 'active' : '' }}"
 
-        onclick="window.location='{{ Auth::user()->role == 'teacher' 
-            ? route('teacher.report.index') 
+        onclick="window.location='{{ Auth::user()->role == 'teacher'
+            ? route('teacher.report.index')
             : route('admin.report.index') }}'"
 
         style="cursor: pointer;">

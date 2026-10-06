@@ -163,9 +163,9 @@
                     <div style="margin-top:15px;">
 
                         <img
-                            src="{{ asset('storage/'.$programWriteup->footer_image) }}"
-                            width="140"
-                            style="border-radius:10px;">
+                        src="{{ asset($programWriteup->footer_image) }}"
+                        width="140"
+                        style="border-radius:10px;">
 
                     </div>
 

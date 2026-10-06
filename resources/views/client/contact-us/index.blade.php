@@ -2,7 +2,16 @@
 
 @section('style')
     <style>
+.map-area {
+    overflow: hidden;
+    border-radius: 10px;
+    margin-top: 30px;
+}
 
+.map-area iframe {
+    display: block;
+    width: 100%;
+}
     </style>
 
 @endsection
@@ -18,7 +27,7 @@
                         <h1 class="text-center">Contact</h1>
                         <div class="breadcrumb-bar">
                             <ul class="breadcrumb text-center">
-                                <li><a href="index.html">Home</a></li>
+                                 <li><a href="{{route('home')}}">Home</a></li>
                                 <li>Contact</li>
                             </ul>
                         </div>
@@ -46,18 +55,53 @@
                                     <div class="contact-social">
                                         <h3><strong>Also Can Find Us</strong></h3>
                                         <ul>
-                                            <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
-                                            <li><a href="#"><i class="fa-brands fa-twitter"></i></a></li>
-                                            <li><a href="#"><i class="fa-brands fa-google-plus-g"></i></a></li>
-                                            <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                            <li>
+                                                <a href="{{ $settings->facebook_url }}" target="_blank">
+                                                    <i class="fa-brands fa-facebook-f"></i>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="{{ $settings->twitter_url }}" target="_blank">
+                                                    <i class="fa-brands fa-twitter"></i>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="{{ $settings->google_plus_url }}" target="_blank">
+                                                    <i class="fa-brands fa-google-plus-g"></i>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="{{ $settings->instagram_url }}" target="_blank">
+                                                    <i class="fa-brands fa-instagram"></i>
+                                                </a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
+                            @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
                            <div class="col-md-12 col-lg-6 yellow-bg">
                                 <div class="contact-form-wrap">
                                     <h2 class="contact-title">SEND YOUR MESSAGE</h2>
-                                    <form id="contact-form" action="mail.php" method="post">
+                                    <form id="contact-form" action="{{ route('contact.submit') }}" method="POST">
+                                        @csrf
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="contact-form-style mb-20">
@@ -77,19 +121,35 @@
                                             <div class="col-md-12">
                                                 <div class="contact-form-style">
                                                     <textarea name="message" placeholder="Type your message here.."></textarea>
-                                                    <button class="button-default" type="submit"><span>Send Email</span></button>
+                                                    <button class="button-default" type="submit"><span>Send Message</span></button>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
-                                    <p class="form-messege"></p>
+                                    {{-- <p class="form-messege"></p> --}}
                                 </div>
                             </div>
                         </div>
-                        <div>Map section</div>
+                      <!-- Map Section Start -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="map-area">
+            <iframe
+                src="https://www.google.com/maps?q={{ urlencode($settings->company_address ?? '') }}&output=embed"
+                width="100%"
+                height="450"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+    </div>
+</div>
+<!-- Map Section End -->
                     </div>
                 </div>
-    
+
 @endsection
 
 @section('script')

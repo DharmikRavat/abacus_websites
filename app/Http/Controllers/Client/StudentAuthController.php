@@ -1,11 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-
-use App\Helpers\LoginLogger;
 use App\Http\Controllers\Controller;
-
-use Jenssegers\Agent\Agent;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +20,8 @@ class StudentAuthController extends Controller
 
     public function login(Request $request)
     {
+        set_time_limit(120); // Increase time limit to prevent timeout during password verification
+
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'min:6'],
@@ -40,11 +38,21 @@ class StudentAuthController extends Controller
         }
 
         // Check password
-        $isPasswordValid = Hash::check($request->password, $student->password);
+$passwordHash = $student->password;
 
-        if (!$isPasswordValid) {
-            return back()->with('error', 'Invalid password.');
-        }
+// Convert Node.js bcryptjs $2b$ hash to PHP-compatible $2y$
+if (str_starts_with($passwordHash, '$2b$')) {
+    $passwordHash = '$2y$' . substr($passwordHash, 4);
+}
+
+$start = microtime(true);
+\Illuminate\Support\Facades\Log::info("Starting password_verify for hash: " . $passwordHash);
+$isPasswordValid = password_verify($request->password, $passwordHash);
+\Illuminate\Support\Facades\Log::info("password_verify took " . (microtime(true) - $start) . " seconds.");
+
+if (!$isPasswordValid) {
+    return back()->with('error', 'Invalid password.');
+}
 
         // Optional: check active flag (you have multiple 0/1 fields, adjust if needed)
         // Example: if column is "status" or "is_active"
@@ -59,16 +67,10 @@ class StudentAuthController extends Controller
             'student_email' => $student->email,
             'student_role'  => $student->role,
         ]);
-        // Log the login
-LoginLogger::log(
-    $student,
-    $request->latitude,
-    $request->longitude
-);
 
         return redirect('/');
     }
-    // Direct Login 
+    // Direct Login
     public function directLogin(Request $request)
 {
     $request->validate([
@@ -98,11 +100,6 @@ LoginLogger::log(
         'student_email' => $student->email,
         'student_role'  => $student->role,
     ]);
-    LoginLogger::log(
-        $student,
-        $request->latitude,
-        $request->longitude
-    );
 
     return redirect('/')
         ->with('success', 'Logged in successfully as '.$student->name);

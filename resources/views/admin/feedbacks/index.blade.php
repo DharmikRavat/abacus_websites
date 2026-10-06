@@ -610,7 +610,7 @@ async function toggleStatus(id, checked) {
 
     try {
 
-        const res = await fetch(`/admin/feedback/${id}`, {
+        const res = await fetch(`/admin/feedbacks/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

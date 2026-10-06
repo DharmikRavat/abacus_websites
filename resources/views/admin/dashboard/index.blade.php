@@ -171,7 +171,7 @@
 
 <!-- STAT CARDS -->
 <div class="stat-grid">
-    
+
     <div class="stat-card">
         <div class="stat-top">
             <div class="stat-icon si-blue">
@@ -464,6 +464,20 @@
                 </svg>
                 Export Report
             </button>
+
+            <a href="{{ route('admin.products.index') }}" class="qa-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                View Products
+            </a>
+
+            <a href="{{ route('admin.feedbacks.index') }}" class="qa-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+                View Feedbacks
+            </a>
 
         </div>
     </div>

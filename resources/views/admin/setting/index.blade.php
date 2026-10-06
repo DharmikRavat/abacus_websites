@@ -16,8 +16,8 @@
 </div>
 
 
-<form action="{{ route('admin.settings.update', $settings->id) }}" 
-      method="POST" 
+<form action="{{ route('admin.settings.update', $settings->id) }}"
+      method="POST"
       enctype="multipart/form-data">
 
     @csrf
@@ -82,11 +82,11 @@
                 <input type="file" name="company_logo" class="form-control">
 
                 @if($settings->company_logo)
-                    <div style="margin-top:10px;">
-                        <img src="{{ asset('storage/'.$settings->company_logo) }}"
-                             width="100"
-                             style="border-radius:10px;">
-                    </div>
+<div style="margin-top:10px;">
+    <img src="{{ asset($settings->company_logo) }}"
+         width="100"
+         style="border-radius:10px;">
+</div>
                 @endif
             </div>
 

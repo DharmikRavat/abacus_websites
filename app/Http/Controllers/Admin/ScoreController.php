@@ -19,6 +19,13 @@ class ScoreController extends Controller
         return view('admin.scores.index', compact('scores'));
     }
 
+    public function reset(string $id)
+    {
+        Score::whereKey($id)->update(['is_visible' => 0]);
+
+        return response()->json(['success' => true]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

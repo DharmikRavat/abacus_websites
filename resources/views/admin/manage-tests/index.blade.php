@@ -76,6 +76,7 @@
                     <th>Questions</th>
                     <th>Duration</th>
                     <th>Password</th>
+                    <th>Result Declare</th>
                     <th>Created</th>
                     <th style="text-align:right">Actions</th>
 
@@ -262,6 +263,19 @@
 
             </div>
 
+            {{-- RESULT DECLARE DATE --}}
+            <div class="form-group">
+
+                <label class="form-label">
+                    Result Declare Date
+                </label>
+
+                <input type="datetime-local"
+                       id="resultDeclareDate"
+                       class="form-control">
+
+            </div>
+
             {{-- PASSWORD --}}
             <div class="form-group">
 
@@ -441,6 +455,10 @@ function render(list) {
                 </td>
 
                 <td>
+                    ${s.result_declare_date ? s.result_declare_date : 'N/A'}
+                </td>
+
+                <td>
                     ${formatDate(s.created_at)}
                 </td>
 
@@ -567,7 +585,7 @@ function openEditModal(id) {
         schedule.exam_level;
 
     document.getElementById('scheduleDate').value =
-        schedule.schedule_date;
+        schedule.schedule_date ? schedule.schedule_date.substring(0, 10) : '';
 
     document.getElementById('scheduleExamType').innerHTML =
         `<option value="${schedule.schedule_exam_type}">
@@ -580,11 +598,23 @@ function openEditModal(id) {
     document.getElementById('noOfQuestions').value =
         schedule.no_of_questions;
 
+    let scheduleTimeMinutes = '';
+    if (schedule.schedule_time) {
+        let parts = schedule.schedule_time.split(':');
+        if (parts.length >= 2) {
+            scheduleTimeMinutes = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+        }
+    }
+
     document.getElementById('scheduleTime').value =
-        schedule.schedule_time;
+        scheduleTimeMinutes;
 
     document.getElementById('schedulePassword').value =
         schedule.schedule_password;
+    document.getElementById('schedulePassword').readOnly = true;
+
+    document.getElementById('resultDeclareDate').value =
+        schedule.result_declare_date ? schedule.result_declare_date.substring(0, 16).replace(' ', 'T') : '';
 
     document.getElementById('formModal')
         .classList.add('open');
@@ -617,7 +647,10 @@ async function saveSchedule() {
             document.getElementById('scheduleTime').value,
 
         schedule_password:
-            document.getElementById('schedulePassword').value
+            document.getElementById('schedulePassword').value,
+
+        result_declare_date:
+            document.getElementById('resultDeclareDate').value
 
     };
 
@@ -747,6 +780,8 @@ function clearForm() {
     document.getElementById('noOfQuestions').value = '';
     document.getElementById('scheduleTime').value = '';
     document.getElementById('schedulePassword').value = '';
+    document.getElementById('schedulePassword').readOnly = false;
+    document.getElementById('resultDeclareDate').value = '';
 }
 
 /* =====================================================
@@ -894,6 +929,23 @@ document.addEventListener('keydown', e => {
 /* =====================================================
    INIT
 ===================================================== */
+
+/* =====================================================
+   AUTO-FILL RESULT DECLARE DATE
+===================================================== */
+document.getElementById('scheduleDate').addEventListener('change', function(e) {
+    if (e.target.value) {
+        let date = new Date(e.target.value);
+        date.setDate(date.getDate() + 3);
+
+        let year = date.getFullYear();
+        let month = String(date.getMonth() + 1).padStart(2, '0');
+        let day = String(date.getDate()).padStart(2, '0');
+
+        // Auto-fill the datetime-local input
+        document.getElementById('resultDeclareDate').value = `${year}-${month}-${day}T12:00`;
+    }
+});
 
 render(schedules);
 

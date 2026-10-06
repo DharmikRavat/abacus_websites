@@ -79,21 +79,41 @@ class SettingController extends Controller
         /*
         |--------------------------------------------------------------------------
         | Handle Logo Upload
-        |--------------------------------------------------------------------------
-        */
-        if ($request->hasFile('company_logo')) {
+        |-----------------------------------------------------------------------/*
+|--------------------------------------------------------------------------
+| Handle Company Logo Upload
+|--------------------------------------------------------------------------
+*/
+if ($request->hasFile('company_logo')) {
 
-            // Delete old logo
-            if ($settings->company_logo && Storage::exists($settings->company_logo)) {
-                Storage::delete($settings->company_logo);
-            }
+    // Delete old logo
+    if ($settings->company_logo) {
+        $oldLogo = public_path($settings->company_logo);
 
-            $logoPath = $request->file('company_logo')
-                ->store('company-logos', 'public');
-
-            $data['company_logo'] = $logoPath;
+        if (file_exists($oldLogo)) {
+            unlink($oldLogo);
         }
+    }
 
+    // Create directory if it doesn't exist
+    $logoDirectory = public_path('company-logos');
+
+    if (!file_exists($logoDirectory)) {
+        mkdir($logoDirectory, 0755, true);
+    }
+
+    // Generate unique filename
+    $logoName = time() . '_' . $request->file('company_logo')->getClientOriginalName();
+
+    // Move file directly to public/company-logos
+    $request->file('company_logo')->move(
+        $logoDirectory,
+        $logoName
+    );
+
+    // Save path in database
+    $data['company_logo'] = 'company-logos/' . $logoName;
+}
         /*
         |--------------------------------------------------------------------------
         | Boolean Fields

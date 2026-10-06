@@ -53,13 +53,14 @@ use App\Http\Controllers\Admin\CertificationController;
 use App\Http\Controllers\Admin\ExamResultController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TestReportController ;
+use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\StudentAuthController;
 use App\Http\Controllers\Client\StudentDashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------     
+|--------------------------------------------------------------------------
 | Client Routes
 |--------------------------------------------------------------------------
 */
@@ -89,6 +90,9 @@ Route::get('/contact-us', function () {
     return view('client.contact-us.index');
 })->name('contact-us');
 
+Route::post('/contact-submit', [ContactController::class, 'submit'])
+    ->name('contact.submit');
+
 Route::get('/franchise-detail', function () {
     return view('client.franchise.index');
 })->name('franchise');
@@ -101,7 +105,25 @@ Route::get('/exam-score', function () {
     return view('client.exam-test.score');
 })->name('exam-score');
 
+Route::get('/locate-center', function () {
+    return view('client.locate-center.index');
+})->name('locate-center');
 
+Route::get('/tricks-formula', function () {
+    return view('client.dashboard.tricks-formula');
+})->name('tricks-formula');
+
+Route::get('/feedback', function () {
+    return view('client.feedback.index');
+})->name('feedback');
+
+Route::get('/privacypolicy', function () {
+    return view('client.privacy-policy.index');
+})->name('privacypolicy');
+
+Route::get('/termsandconditions', function () {
+    return view('client.terms-and-conditions.index');
+})->name('termsandconditions');
 // ============================
 // STUDENT AUTH
 // ============================
@@ -130,8 +152,11 @@ Route::get('/register', function () {
 
 Route::resource('dashboard', StudentDashboardController::class);
 
+Route::resource('products', \App\Http\Controllers\Client\ProductController::class)->only(['index']);
+Route::resource('feedbacks', \App\Http\Controllers\Client\FeedbackController::class)->only(['create', 'store']);
+
 Route::get('/students/create', [StudentDashboardController::class, 'create'])->name('add-user');
-Route::post('/students/store', [StudentController::class, 'add_student'])->name('store-user');
+Route::post('/students/store', [StudentDashboardController::class, 'store'])->name('store-user');
 
 // Choose User
 Route::get('/students/choose-user', [StudentDashboardController::class, 'get_added_user'])
@@ -141,16 +166,217 @@ Route::get('/students/choose-user', [StudentDashboardController::class, 'get_add
 
 // Exam Routes
 Route::get('/students/free-pratice', [StudentDashboardController::class, 'free_practice'])->name('free-practice');
-Route::get('/exam-sheet',function(){
-    return view('client.dashboard.exam.quiz');
+Route::get('/exam-sheet',function(\Illuminate\Http\Request $request){
+    $minutes = $request->has('time') && $request->time !== '' ? (int)$request->time : 3;
+    $seconds = $request->has('seconds') && $request->seconds !== '' ? (int)$request->seconds : 0;
+    $mode_id = $request->mode;
+    $exam_level_id = $request->level;
+
+    $mode_name = \App\Models\ExamMode::where('id', $mode_id)->value('name');
+    $level_number = \App\Models\ExamLevel::where('id', $exam_level_id)->value('level');
+
+    $schedule_id = $request->schedule_id ?? null;
+    $schedule = $schedule_id ? \App\Models\TestSchedule::find($schedule_id) : null;
+
+    $query = \Illuminate\Support\Facades\DB::table('questions')
+        ->where('difficulty', strtolower($mode_name))
+        ->where('exam_level', $level_number)
+        ->inRandomOrder();
+
+    if ($schedule && $schedule->no_of_questions) {
+        $query->limit($schedule->no_of_questions);
+    }
+
+    $dbQuestions = $query->get();
+    $dynamicQuestions = [];
+    foreach ($dbQuestions as $q) {
+
+        // Split "+22+22+55-33" into ["+22", "+22", "+55", "-33"]
+        preg_match_all('/[+-]?\d+/', $q->question, $matches);
+        $questionParts = $matches[0] ?? [];
+
+        // Parse options JSON
+        $answersArray = [];
+        $correctAnswerValue = '';
+        $decodedOptions = json_decode($q->options, true);
+        if (is_array($decodedOptions)) {
+            foreach ($decodedOptions as $key => $val) {
+                $answersArray[] = $val;
+                if ($key === $q->correct_option) {
+                    $correctAnswerValue = $val;
+                }
+            }
+        }
+
+        $dynamicQuestions[] = [
+            'id' => $q->id,
+            'question' => $questionParts,
+            'answers' => $answersArray,
+            'correct' => $correctAnswerValue
+        ];
+    }
+
+    return view('client.dashboard.exam.quiz', [
+        'minutes' => $minutes,
+        'seconds' => $seconds,
+        'mode_id' => $mode_id,
+        'exam_level_id' => $exam_level_id,
+        'duration_id' => \App\Models\ExamDuration::where('duration_minutes', $minutes)->value('id') ?? 1,
+        'dynamicQuestions' => $dynamicQuestions,
+        'schedule' => $schedule
+    ]);
 })->name('exam-sheet');
 
+Route::get('/assessment/{type}', [StudentDashboardController::class, 'assessment_form'])->name('online.assessment');
+Route::post('/assessment/get-level', [StudentDashboardController::class, 'get_level'])->name('online.assessment.get-level');
+Route::post('/assessment/start', [StudentDashboardController::class, 'start_assessment'])->name('online.assessment.start');
+
+Route::post('/submit-score', [StudentDashboardController::class, 'submit_score'])->name('submit-score');
+Route::post('/reset-practice-scores', [StudentDashboardController::class, 'resetPracticeScores'])->name('reset-practice-scores');
+
 Route::get('/score-sheet',function(){
-    return view('client.dashboard.score.index');
+    $user_id = session('student_id');
+    if (!$user_id) {
+        $user_id = \App\Models\Customer::first()->id ?? 1;
+    }
+
+    $practiceScores = \Illuminate\Support\Facades\DB::table('scores')
+        ->where('user_id', $user_id)
+        ->where('exam_type', 'practice')
+        ->leftJoin('exam_modes', 'scores.mode_id', '=', 'exam_modes.id')
+        ->leftJoin('exam_levels', 'scores.exam_level_id', '=', 'exam_levels.id')
+        ->select('scores.*', 'exam_modes.name as mode', 'exam_levels.level as level')
+        ->orderBy('scores.created_at', 'desc')
+        ->get();
+
+    $practiceArray = [];
+    foreach($practiceScores as $s) {
+        $practiceArray[] = [
+            'type' => 'Practice Score',
+            'mode' => $s->mode ?? 'N/A',
+            'level' => 'Level ' . ($s->level ?? 'N/A'),
+            'date' => \Carbon\Carbon::parse($s->created_at)->format('d M Y'),
+            'raw_date' => \Carbon\Carbon::parse($s->created_at)->format('Y-m-d'),
+            'time' => $s->time,
+            'total' => $s->total,
+            'correct' => $s->correct,
+            'wrong' => $s->wrong,
+            'skipped' => $s->skipped,
+            'is_visible' => $s->is_visible
+        ];
+    }
+
+    // Test Scores
+    $testScores = \Illuminate\Support\Facades\DB::table('scores')
+        ->where('user_id', $user_id)
+        ->where('exam_type', 'test')
+        ->leftJoin('exam_levels', 'scores.exam_level_id', '=', 'exam_levels.id')
+        ->select('scores.*', 'exam_levels.level as level')
+        ->orderBy('scores.created_at', 'desc')
+        ->get();
+
+    @file_put_contents(storage_path('logs/score_debug.txt'), date('Y-m-d H:i:s') . " - score-sheet loaded. user_id: " . $user_id . ", testScores count: " . count($testScores) . "\n", FILE_APPEND);
+
+
+    $testArray = [];
+    foreach($testScores as $s) {
+        $testArray[] = [
+            'type' => 'Online Test Score',
+            'mode' => ucwords(str_replace('_', ' ', $s->schedule_test_type)) ?: 'N/A',
+            'level' => 'Level ' . ($s->level ?? 'N/A'),
+            'date' => \Carbon\Carbon::parse($s->created_at)->format('d M Y'),
+            'raw_date' => \Carbon\Carbon::parse($s->created_at)->format('Y-m-d'),
+            'time' => $s->time,
+            'total' => $s->total,
+            'correct' => $s->correct,
+            'wrong' => $s->wrong,
+            'skipped' => $s->skipped,
+            'is_visible' => $s->is_visible
+        ];
+    }
+
+    // Exam Scores
+    $examScores = \Illuminate\Support\Facades\DB::table('scores')
+        ->where('user_id', $user_id)
+        ->where('exam_type', 'exam')
+        ->leftJoin('exam_levels', 'scores.exam_level_id', '=', 'exam_levels.id')
+        ->select('scores.*', 'exam_levels.level as level')
+        ->orderBy('scores.created_at', 'desc')
+        ->get();
+
+    $examArray = [];
+    foreach($examScores as $s) {
+        $isPending = $s->result_available_at && \Carbon\Carbon::now()->lt($s->result_available_at);
+        $examArray[] = [
+            'type' => 'Online Exam Score',
+            'mode' => ucwords(str_replace('_', ' ', $s->schedule_test_type)) ?: 'N/A',
+            'level' => 'Level ' . ($s->level ?? 'N/A'),
+            'date' => \Carbon\Carbon::parse($s->created_at)->format('d M Y'),
+            'raw_date' => \Carbon\Carbon::parse($s->created_at)->format('Y-m-d'),
+            'time' => $s->time,
+            'is_pending' => $isPending,
+            'result_available_at' => $s->result_available_at ? \Carbon\Carbon::parse($s->result_available_at)->format('d F Y \a\t h:i A') : null,
+
+            'total' => $isPending ? null : $s->total,
+            'correct' => $isPending ? null : $s->correct,
+            'wrong' => $isPending ? null : $s->wrong,
+            'skipped' => $isPending ? null : $s->skipped,
+            'is_visible' => $s->is_visible
+        ];
+    }
+
+    return view('client.dashboard.score.index', compact('practiceArray', 'testArray', 'examArray'));
 })->name('score-sheet');
+Route::get('/profile',function(){
+    $user_id = session('student_id');
+    $user = \App\Models\Customer::find($user_id);
+    return view('client.profile.index', compact('user'));
+})->name('profile');
+
+Route::get('/profile/edit',function(){
+    $user_id = session('student_id');
+    $user = \App\Models\Customer::find($user_id);
+    $centers = \App\Models\Customer::where('role', 'center')->get();
+    return view('client.profile.edit', compact('user', 'centers'));
+})->name('profile.edit');
+
+Route::post('/profile/update', function(\Illuminate\Http\Request $request){
+    $user_id = session('student_id');
+    $user = \App\Models\Customer::find($user_id);
+    if (!$user) {
+        return back()->with('error', 'User not found!');
+    }
+
+    $request->validate([
+        'name' => 'required',
+        'student_enrollment_id' => 'required',
+        'password' => 'required',
+        'mobile' => 'required'
+    ]);
+
+    if ($request->hasFile('profile')) {
+        $file = $request->file('profile');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('uploads/profiles'), $filename);
+        $user->profile = 'uploads/profiles/' . $filename;
+    }
+
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->password = $request->password;
+    $user->mobile = $request->mobile;
+    $user->address = $request->address;
+    $user->city = $request->city;
+    $user->state = $request->state;
+    $user->country = $request->country;
+    $user->center_id = $request->center_id;
+    $user->save();
+
+    return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+})->name('profile.update');
 
 /*
-|--------------------------------------------------------------------------     
+|--------------------------------------------------------------------------
 | Admin Routes
 |--------------------------------------------------------------------------
 */
@@ -201,7 +427,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         'attendance/monthly-report',
         [AttendanceController::class, 'monthlyReport']
     )->name('attendance.monthly-report');
-    
+
     Route::get(
         'attendance/monthly-report/pdf',
         [AttendanceController::class, 'monthlyReportPdf']
@@ -239,6 +465,8 @@ Route::post('/program-writeup', [ProgramWriteupController::class, 'update'])
     Route::resource('questions', QuestionController::class);
     Route::resource('manage-tests', ManageTestController::class);
     Route::resource('scores', ScoreController::class);
+    Route::post('/scores/{id}/reset', [ScoreController::class, 'reset'])
+        ->name('scores.reset');
     Route::resource('feedbacks', FeedbackController::class);
     Route::resource('locate-centers', LocateCenterController::class);
     Route::resource('statistics', StatisticsController::class);
@@ -309,7 +537,7 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
 
         Route::resource('students', StudentController::class);
         Route::resource('attendance', AttendanceController::class);
-       
+
         Route::resource('scores', ScoreController::class);
 
         Route::resource('manage-tests', ManageTestController::class);
@@ -320,17 +548,17 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
             '/test-reports',
             [TestReportController::class, 'index']
         )->name('test-reports.index');
-        
+
         Route::post(
             '/test-reports',
             [TestReportController::class, 'store']
         )->name('test-reports.store');
-        
+
         Route::put(
             '/test-reports/{id}',
             [TestReportController::class, 'update']
         )->name('test-reports.update');
-        
+
         Route::delete(
             '/test-reports/{id}',
             [TestReportController::class, 'destroy']
@@ -338,7 +566,7 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
 
         Route::get('/exam-results', [ExamResultController::class, 'index'])
         ->name('exam-results.index');
-    
+
     Route::post('/exam-results', [ExamResultController::class, 'store'])
         ->name('exam-results.store');
 

@@ -19,6 +19,31 @@
         margin-bottom: 24px;
     }
 
+    .back-arrow-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #334155;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+        flex-shrink: 0;
+    }
+
+    .back-arrow-btn:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff !important;
+        transform: translateX(-3px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
     .page-title{
         font-size: 2rem;
         font-weight: 800;
@@ -210,21 +235,33 @@
     height: 40px;
     padding: 0 18px;
     border-radius: 10px;
-    background: linear-gradient(135deg,#2563eb,#4f46e5);
-    color: #fff !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    background: #2563eb;
+    color: #ffffff !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px;
     font-size: .85rem;
     font-weight: 600;
     text-decoration: none;
     transition: .2s ease;
-    box-shadow: 0 8px 20px rgba(37,99,235,.15);
+    box-shadow: 0 4px 10px rgba(37,99,235,.2);
+    white-space: nowrap;
+    border: none;
+}
+
+.login-btn i {
+    color: #ffffff !important;
+    font-size: 1rem;
+    margin: 0 !important;
 }
 
 .login-btn:hover{
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(37,99,235,.25);
+    background: #1d4ed8;
+    box-shadow: 0 6px 15px rgba(37,99,235,.3);
+    color: #ffffff !important;
 }
 
 
@@ -300,17 +337,23 @@
     <div class="container">
 
         {{-- PAGE HEADER --}}
-        <div class="page-header d-flex justify-content-between align-items-center flex-wrap">
+        <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-            <div>
+            <div class="d-flex align-items-center gap-3">
 
-                <h1 class="page-title">
-                    Students List
-                </h1>
+                <a href="{{ route('dashboard.index') }}" class="back-arrow-btn" title="Back to Dashboard">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
 
-                <p class="page-subtitle">
-                    Manage all registered students easily.
-                </p>
+                <div>
+                    <h1 class="page-title">
+                        Students List
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Manage all registered students easily.
+                    </p>
+                </div>
 
             </div>
 
@@ -372,7 +415,7 @@
 
                                     <img
                                         src="{{ $student->profile }}"
-                                        class="student-img"> 
+                                        class="student-img">
 
                                 </td>
 
@@ -483,7 +526,7 @@
 <!-- LOGIN MODAL -->
 <div class="modal fade" id="studentLoginModal" tabindex="-1">
 
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
 
         <div class="modal-content border-0 shadow-lg">
 

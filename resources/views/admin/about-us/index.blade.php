@@ -252,15 +252,27 @@
     });
      CKEDITOR.config.versionCheck = false;
 
-      
+
 </script>
 <script>
 $(document).ready(function () {
 
     $('form').on('submit', function (e) {
+
         e.preventDefault();
 
+        /*
+        |--------------------------------------------------------------------------
+        | IMPORTANT:
+        | Sync CKEditor content back to textarea
+        |--------------------------------------------------------------------------
+        */
+        for (let instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }
+
         let form = $(this)[0];
+
         let formData = new FormData(form);
 
         $.ajax({
@@ -271,7 +283,11 @@ $(document).ready(function () {
             contentType: false,
 
             beforeSend: function () {
-                $('button[type="submit"]').text('Saving...');
+
+                $('button[type="submit"]')
+                    .prop('disabled', true)
+                    .text('Saving...');
+
             },
 
             success: function (res) {
@@ -280,29 +296,54 @@ $(document).ready(function () {
                     alert(res.message);
                 }
 
-                $('button[type="submit"]').text('Save About Us');
+                $('button[type="submit"]')
+                    .prop('disabled', false)
+                    .text('Save About Us');
+
             },
 
             error: function (xhr) {
 
-                let errors = xhr.responseJSON.errors;
+                let msg = 'Something went wrong.';
 
-                let msg = '';
+                if (xhr.responseJSON) {
 
-                $.each(errors, function (key, value) {
-                    msg += value + "\n";
-                });
+                    if (xhr.responseJSON.errors) {
+
+                        msg = '';
+
+                        $.each(
+                            xhr.responseJSON.errors,
+                            function (key, value) {
+
+                                msg += value.join
+                                    ? value.join('\n') + "\n"
+                                    : value + "\n";
+
+                            }
+                        );
+
+                    } else if (xhr.responseJSON.message) {
+
+                        msg = xhr.responseJSON.message;
+
+                    }
+
+                }
 
                 alert(msg);
 
-                $('button[type="submit"]').text('Save About Us');
+                $('button[type="submit"]')
+                    .prop('disabled', false)
+                    .text('Save About Us');
+
             }
+
         });
 
     });
 
 });
-
 
     // ADD VISION FIELD
     function addVisionField() {

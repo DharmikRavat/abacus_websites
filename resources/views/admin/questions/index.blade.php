@@ -289,82 +289,50 @@ const questionTypeSelect = document.getElementById('questionType');
 
 questionTypeSelect.addEventListener('change', function () {
 
-    const selectedText =
-        this.options[this.selectedIndex].text.trim().toLowerCase();
+const selectedText =
+    this.options[this.selectedIndex].text.trim().toLowerCase();
 
-    const container =
-        document.getElementById('difficultyContainer');
+const container =
+    document.getElementById('difficultyContainer');
 
-    if (selectedText === 'test') {
+if (selectedText === 'test') {
 
-        container.innerHTML = `
-            <label class="form-label">Test Type</label>
+    container.innerHTML = `
+        <label class="form-label">Test Type</label>
 
-            <select id="difficulty" class="form-control">
+        <select id="scheduleTestType" class="form-control">
+            <option value="">Select Test Type</option>
+            <option value="weekly_test">Weekly Test</option>
+            <option value="monthly_test">Monthly Test</option>
+        </select>
+    `;
 
-                <option value="">Select Test Type</option>
+} else if (selectedText === 'exam') {
 
-                <option value="weekly_test">
-                    Weekly Test
-                </option>
+    container.innerHTML = `
+        <label class="form-label">Exam Type</label>
 
-                <option value="monthly_test">
-                    Monthly Test
-                </option>
+        <select id="examType" class="form-control">
+            <option value="">Select Exam Type</option>
+            <option value="final_exam">Final Exam</option>
+            <option value="olympiad_exam">Olympiad Exam</option>
+        </select>
+    `;
 
-            </select>
-        `;
+} else {
 
-    } 
-    else if (selectedText === 'exam') {
+    container.innerHTML = `
+        <label class="form-label">Difficulty</label>
 
-        container.innerHTML = `
-            <label class="form-label">Exam Type</label>
-
-            <select id="difficulty" class="form-control">
-
-                <option value="">Select Exam Type</option>
-
-                <option value="final_exam">
-                    Final Exam
-                </option>
-
-                <option value="olympiad_exam">
-                    Olympiad Exam
-                </option>
-
-            </select>
-        `;
-
-    } 
-    
-    else {
-
-        container.innerHTML = `
-            <label class="form-label">Difficulty</label>
-
-            <select id="difficulty" class="form-control">
-
-                <option value="">Select Difficulty</option>
-
-                <option value="easy">
-                    Easy
-                </option>
-
-                <option value="medium">
-                    Medium
-                </option>
-
-                <option value="hard">
-                    Hard
-                </option>
-
-            </select>
-        `;
-    }
-
+        <select id="difficulty" class="form-control">
+            <option value="">Select Difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+    `;
+}
 });
-
 
 /* =====================================================
    FETCH QUESTIONS
@@ -757,6 +725,14 @@ function openEditModal(id) {
 ===================================================== */
 
 async function saveQuestion() {
+    const questionType =
+        document.getElementById('questionType');
+
+    const selectedType =
+        questionType.options[questionType.selectedIndex]
+            .text
+            .trim()
+            .toLowerCase();
 
     const payload = {
 
@@ -766,11 +742,19 @@ async function saveQuestion() {
         exam_level:
             document.getElementById('examLevel').value,
 
-        difficulty:
-            document.getElementById('difficulty').value,
 
     };
+ // ONLY Practice → send difficulty
+ if (selectedType === 'practice') {
+        payload.difficulty =
+            document.getElementById('difficulty')?.value || null;
+    }
 
+    // ONLY Test → send schedule_test_type
+    if (selectedType === 'test') {
+        payload.schedule_test_type =
+            document.getElementById('scheduleTestType')?.value || null;
+    }
     /* =====================================
        UPDATE
     ===================================== */
@@ -875,9 +859,14 @@ async function saveQuestion() {
     const data = await res.json();
 
     if (!res.ok) {
-
-        alert(data.message ?? 'Save failed');
-
+        let errorMsg = data.message ?? 'Save failed';
+        if (data.errors) {
+            errorMsg += ':\n';
+            for (let key in data.errors) {
+                errorMsg += '\n- ' + data.errors[key][0];
+            }
+        }
+        alert(errorMsg);
         return;
     }
 

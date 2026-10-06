@@ -555,7 +555,7 @@ function render(list)
         product.item_image
         ? `
             <img
-                src="{{ url('/') }}/${product.item_image}"
+                src="{{ asset('') }}${product.item_image}"
                 alt="${escHtml(product.item_name)}"
                 style="
                     width:45px;
@@ -861,7 +861,7 @@ function openEditModal(id)
     if (product.item_image) {
 
         document.getElementById('previewImage').src =
-            '{{ url('/') }}/' + product.item_image;
+            '{{ asset('') }}' + product.item_image;
 
         document.getElementById('imagePreview').style.display =
             'block';

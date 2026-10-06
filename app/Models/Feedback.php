@@ -16,4 +16,9 @@ class Feedback extends Model
         'status',
         'date'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(Customer::class, 'user_id');
+    }
 }

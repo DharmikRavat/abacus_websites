@@ -4,18 +4,36 @@
         <div class="container">
             <div class="header-banner-content">
 
-                {{-- Logo Left --}}
+
+                {{-- Logo + Academy Text --}}
+                <div class="header-brand">
+
 <a href="{{ route('home') }}" class="header-banner-logo">
     <img src="{{ !empty($settings->company_logo)
-                    ? asset('storage/' . $settings->company_logo)
-                    : asset('client/abacusacademyLogo.png') }}"
+            ? asset($settings->company_logo)
+            : asset('client/abacusacademyLogo.png') }}"
          alt="{{ $settings->company_name ?? 'India Abacus Academy' }}"
          style="height:80px; width:auto; object-fit:contain;">
 </a>
 
+                    <div class="header-brand-text">
+                        <div class="academy-name">
+                            Indian Abacus Academy
+                        </div>
+
+                        <div class="academy-tagline">
+                            An international institute of mental math and brain development
+                        </div>
+                    </div>
+
+                </div>
+
+
                 {{-- Login Right --}}
                 <div class="header-login">
-
+<div class="iso-certified">
+    ISO 9001:2015 Certified Institute
+</div>
                     @if(session()->has('student_id'))
 
                         <div class="dropdown">
@@ -39,6 +57,16 @@
                                     {{ strtoupper(substr(session('student_name'), 0, 1)) }}
                                 </div>
 
+            {{-- Full Student Name Outside Circle --}}
+            <span style="
+                margin-left:10px;
+                font-size:14px;
+                font-weight:600;
+                color:#333;
+                white-space:nowrap;
+            ">
+                {{ session('student_name') }}
+            </span>
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -91,20 +119,24 @@
                             <nav>
                                 <ul id="nav">
                                     <li><a href="{{ route('home') }}"><i class="fas fa-home m-2"></i>Home</a></li>
-                                    <li><a href="{{ route('about-us') }}"><i class="fas fa-circle-info m-2"></i>About</a></li>
+                                    <li><a href="{{ route('about-us') }}"><i class="fas fa-circle-info m-2"></i>About Us</a></li>
                                     <li><a href="{{ route('gallery') }}"> <i class="fas fa-images m-2"></i>Gallery</a>
                                     </li>
                                     <li><a href="{{ route('programs') }}"> <i class="fas fa-graduation-cap m-2"></i>Programs</a>
                                     </li>
                                     <li><a href="{{ route('franchise') }}"> <i class="fas fa-handshake m-2"></i>Franchise</a></li>
-                                    <li><a href="{{ route('exam-test') }}"> <i class="fas fa-file-pen m-2"></i>Exam/Test</a>
+                                    <li>
+                                        <a href="{{ session()->has('student_id') ? url('/dashboard') : url('student-login') }}">
+                                            <i class="fas fa-file-pen m-2"></i>Exam/Test
+                                        </a>
+                                    </li>
                                     {{-- https://eazypay.icicibank.com/eazypayLink?P1=3oKg52vCU3oCVzaDaX4oRw== --}}
                                        <li><a href="https://eazypay.icicibank.com/eazypayLink?P1=3oKg52vCU3oCVzaDaX4oRw==" target="_blank">  <i class="fas fa-credit-card m-2"></i>Payment</a>
                                     </li>
                                     {{-- <li><a href="#">Payment</a>
                                     </li> --}}
 
-                                    <li><a href="{{ route('contact-us') }}">  <i class="fas fa-envelope m-2"></i>Contact</a></li>
+                                    <li><a href="{{ route('contact-us') }}">  <i class="fas fa-envelope m-2"></i>Contact Us</a></li>
                                     <!-- LOGIN BUTTON -->
 
                                 </ul>

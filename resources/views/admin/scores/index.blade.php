@@ -37,6 +37,12 @@
                id="searchInput"
                placeholder="Search student / exam..."
                oninput="filterScores(this.value)">
+        <select id="typeFilter" onchange="filterScores(document.getElementById('searchInput').value)" style="margin-right: 15px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 14px; outline: none; background: white; color: var(--text-color);">
+            <option value="">All Types</option>
+            <option value="practice">Practice</option>
+            <option value="test">Online Test</option>
+            <option value="exam">Online Exam</option>
+        </select>
 
         <span id="score-count"
               style="font-size:12px;color:var(--faint);white-space:nowrap">
@@ -152,7 +158,7 @@
 let currentPage = 1;
 const perPage = 5;
 const scores = {!! json_encode(
-    
+
     $scores->map(function ($s) {
 
         return [
@@ -194,7 +200,7 @@ const scores = {!! json_encode(
 
             'time' =>
                 $s->time,
-            
+
             'schedule_test_type' =>
                 $s->schedule_test_type,
 
@@ -212,6 +218,8 @@ const scores = {!! json_encode(
                     ? $s->created_at->format('d M Y h:i A')
                     : '',
 
+            'is_visible' =>
+                $s->is_visible,
         ];
 
     })->values()
@@ -286,7 +294,7 @@ function render(list) {
 
                     </div>
 
-           
+
 
             </td>
 
@@ -306,7 +314,7 @@ function render(list) {
 
             <td>
 
-                <span class="badge 
+                <span class="badge
                     ${score.mode === 'easy'
                         ? 'bg-success'
                         : 'bg-warning'}">
@@ -320,21 +328,21 @@ function render(list) {
             <td>
 
                 <strong style="color:green">
-                    ${score.correct}
+                    ${score.is_visible == 0 ? '-' : score.correct}
                 </strong>
 
                 /
-                
-                ${score.total}
+
+                ${score.is_visible == 0 ? '-' : score.total}
 
             </td>
 
             <td style="color:red">
-                ${score.wrong}
+                ${score.is_visible == 0 ? '-' : score.wrong}
             </td>
 
             <td>
-                ${score.skipped}
+                ${score.is_visible == 0 ? '-' : score.skipped}
             </td>
 
             <td>
@@ -409,6 +417,25 @@ function render(list) {
 
         </button>
 
+        <!-- Reset visibility -->
+        <button class="btn-icon"
+                title="Reset score visibility"
+                onclick="resetScore(${score.id})">
+
+            <svg width="15"
+                 height="15"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="M3 12a9 9 0 1 0 3-6.7"/>
+                <polyline points="3 4 3 10 9 10"/>
+
+            </svg>
+
+        </button>
+
     </div>
 </td>
 
@@ -440,6 +467,23 @@ Score ID : ${s.score_id ?? "--"}`;
         alert("Score details copied!");
     });
 
+}
+
+function resetScore(id) {
+    if (!confirm('Hide this score from the student score sheet?')) return;
+
+    fetch('{{ url('/admin/scores') }}/' + id + '/reset', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    }).then(response => {
+        if (!response.ok) throw new Error('Reset failed');
+        const score = scores.find(item => item.id === id);
+        if (score) score.is_visible = 0;
+        alert('Score hidden from the student score sheet.');
+    }).catch(() => alert('Unable to reset score.'));
 }
 
 function shareScore(id) {
@@ -516,17 +560,18 @@ function changePage(page) {
         .value
         .toLowerCase();
 
-    const filtered = scores.filter(score =>
+    const typeFilter = document.getElementById('typeFilter').value.toLowerCase();
 
-        (score.student_name ?? '').toLowerCase().includes(lower) ||
+    const filtered = scores.filter(score => {
+        let matchesSearch = (score.student_name ?? '').toLowerCase().includes(lower) ||
+                            (score.email ?? '').toLowerCase().includes(lower) ||
+                            (score.exam ?? '').toLowerCase().includes(lower) ||
+                            (score.score_id ?? '').toLowerCase().includes(lower);
 
-        (score.email ?? '').toLowerCase().includes(lower) ||
+        let matchesType = typeFilter === '' || (score.exam ?? '').toLowerCase().includes(typeFilter);
 
-        (score.exam ?? '').toLowerCase().includes(lower) ||
-
-        (score.score_id ?? '').toLowerCase().includes(lower)
-
-    );
+        return matchesSearch && matchesType;
+    });
 
     render(filtered);
 }
@@ -540,17 +585,18 @@ function filterScores(query) {
 
     const lower = query.toLowerCase();
 
-    const filtered = scores.filter(score =>
+    const typeFilter = document.getElementById('typeFilter').value.toLowerCase();
 
-        (score.student_name ?? '').toLowerCase().includes(lower) ||
+    const filtered = scores.filter(score => {
+        let matchesSearch = (score.student_name ?? '').toLowerCase().includes(lower) ||
+                            (score.email ?? '').toLowerCase().includes(lower) ||
+                            (score.exam ?? '').toLowerCase().includes(lower) ||
+                            (score.score_id ?? '').toLowerCase().includes(lower);
 
-        (score.email ?? '').toLowerCase().includes(lower) ||
+        let matchesType = typeFilter === '' || (score.exam ?? '').toLowerCase().includes(typeFilter);
 
-        (score.exam ?? '').toLowerCase().includes(lower) ||
-
-        (score.score_id ?? '').toLowerCase().includes(lower)
-
-    );
+        return matchesSearch && matchesType;
+    });
 
     render(filtered);
 }
@@ -602,22 +648,22 @@ function viewScore(id) {
 
         <div class="form-group">
             <label class="form-label">Correct Answers</label>
-            <div>${s.correct}</div>
+            <div>${s.is_visible == 0 ? '-' : s.correct}</div>
         </div>
 
         <div class="form-group">
             <label class="form-label">Wrong Answers</label>
-            <div>${s.wrong}</div>
+            <div>${s.is_visible == 0 ? '-' : s.wrong}</div>
         </div>
 
         <div class="form-group">
             <label class="form-label">Skipped</label>
-            <div>${s.skipped}</div>
+            <div>${s.is_visible == 0 ? '-' : s.skipped}</div>
         </div>
 
         <div class="form-group">
             <label class="form-label">Total Questions</label>
-            <div>${s.total}</div>
+            <div>${s.is_visible == 0 ? '-' : s.total}</div>
         </div>
 
         <div class="form-group">

@@ -45,13 +45,14 @@ class Customer extends Authenticatable
         'country',
         'slug_id',
         'role',
-        'student_enrollment_id'
+        'student_enrollment_id',
+        'added_by'
     ];
 
     protected $hidden = [
         'api_token'
     ];
-    
+
 
 
     /**
@@ -74,15 +75,15 @@ class Customer extends Authenticatable
             'customer_id' => $this->id
         ];
     }
-   
+
     public function getProfileAttribute($image)
     {
         // Check if $image is a valid URL
         if (filter_var($image, FILTER_VALIDATE_URL)) {
             return $image; // If $image is already a URL, return it as it is
         } else {
-            // If $image is not a URL, construct the URL using configurations
-            return $image != '' ? url('') . config('global.IMG_PATH') . config('global.USER_IMG_PATH') . $image : '';
+            // If $image is not a URL, construct the URL using configurations, or return default
+            return $image != '' ? url('') . config('global.IMG_PATH') . config('global.USER_IMG_PATH') . $image : 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
         }
     }
     public function getMobileAttribute($mobile)
@@ -105,18 +106,18 @@ class Customer extends Authenticatable
         return $this->hasMany(StudentCertification::class, 'student_id');
     }
 
-   
+
     /**
      * Get the user associated with the Customer
      *
      */
-   
+
 
     public function getIsUserVerifiedAttribute(){
         return $this->whereHas('verify_customer',function($query){
             $query->where(['user_id' => $this->id, 'status' => 'success']);
         })->count() ? true : false;
     }
-    
+
 }
 

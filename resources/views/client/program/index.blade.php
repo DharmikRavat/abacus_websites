@@ -183,6 +183,27 @@
             }
 
         }
+        .final-program-text h3 {
+    font-size: 32px;
+    line-height: 1.25;
+    font-weight: 700;
+    margin-bottom: 15px;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
+@media (max-width: 991px) {
+    .final-program-text h3 {
+        font-size: 27px;
+    }
+}
+
+@media (max-width: 575px) {
+    .final-program-text h3 {
+        font-size: 23px;
+        line-height: 1.3;
+    }
+}
     </style>
 
 @endsection
@@ -256,31 +277,7 @@
 
                         <div class="program-content">
 
-                            <p>
-                                The future of our children lies in their early mental development.
-                                Children need to equip themselves with the building blocks of
-                                global thinking by optimizing and integrating the left and right
-                                functions of the brain during their early years.
-                            </p>
-
-                            <p>
-                                The Abacus program aims at enhancing and optimizing the child’s
-                                hidden potential such as imagination, creativity and computation
-                                skills to evoke their senses and improve comprehension.
-                            </p>
-
-                            <p>
-                                Abacus is an educational tool through which children can learn
-                                fast calculations and numbers in a fun and engaging way. The child
-                                uses fingers to move the beads on the abacus and this collaborative
-                                movement of the fingers and brain helps create photographic memory.
-                            </p>
-
-                            <p>
-                                During Abacus practice, children use both hands which activates
-                                both the left and right sides of the brain, helping in brain
-                                development, faster thinking and improved accuracy.
-                            </p>
+                            {!! $academyProgramWriteup->paragraph_1 ?? '' !!}
 
                         </div>
 
@@ -291,44 +288,79 @@
                 <!-- PROGRAM LIST -->
                 <div class="row">
                     @foreach ($academyPrograms as $program)
+
                         <div class="col-lg-4 col-md-6 col-12">
-                            <div class="single-item mb-50 mt-50">
 
-                                <!-- IMAGE -->
-                                <div class="single-item-image overlay-effect">
-                                    <a href="#">
-                                        <img src="{{ $program->image ? asset($program->image) : asset('client/img/course/1.jpg') }}"
-                                            alt="{{ $program->name }}" style="height: 80px; width: auto; margin-top: 20px;">
-                                    </a>
-                                </div>
-                                <!-- CONTENT -->
-                                <div class="single-item-text">
-                                    <h4>
-                                        <a href="#">
+                            @if(!empty($program->link))
+                                <a href="{{ $program->link }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   style="text-decoration: none; color: inherit;">
+                            @endif
+
+                                <div class="single-item mb-50 mt-50">
+
+                                    <!-- IMAGE -->
+                                    <div class="single-item-image overlay-effect">
+                                        <img src="{{ $program->image
+                                            ? asset($program->image)
+                                            : asset('client/img/course/1.jpg') }}"
+                                            alt="{{ $program->name }}"
+                                            style="height: 80px; width: auto; margin-top: 20px;">
+                                    </div>
+
+                                    <!-- CONTENT -->
+                                    <div class="single-item-text">
+
+                                        <h4>
                                             {{ $program->name }}
-                                        </a>
-                                    </h4>
+                                        </h4>
 
-                                    <p>
-                                        {{ $program->description }}
-                                    </p>
+                                        <p>
+                                            {{ $program->description }}
+                                        </p>
 
-                                    <div class="single-item-content">
-                                        <div class="single-item-comment-view">
-                                            <strong>
-
-
-                                                {{ $program->duration }}
-
-                                            </strong>
+                                        <!-- DURATION -->
+                                        <div class="single-item-content">
+                                            <div class="single-item-comment-view">
+                                                <strong>
+                                                    {{ $program->duration }}
+                                                </strong>
+                                            </div>
                                         </div>
 
+                                        <!-- PROGRAM IMAGES -->
+                                        @if(!empty($program->program_images))
+                                            <div class="mb-3">
+                                                <div class="program-images mt-3">
+
+                                                    @foreach($program->program_images as $image)
+                                                        <img src="{{ asset($image) }}"
+                                                             alt="{{ $program->name }}"
+                                                             class="img-fluid"
+                                                             style="
+                                                                width: 80px;
+                                                                height: 60px;
+                                                                object-fit: cover;
+                                                                border-radius: 6px;
+                                                                margin-right: 6px;
+                                                             ">
+                                                    @endforeach
+
+                                                </div>
+                                            </div>
+                                        @endif
 
                                     </div>
 
                                 </div>
-                            </div>
+
+                            @if(!empty($program->link))
+                                </a>
+                            @endif
+
                         </div>
+
                     @endforeach
                 </div>
 
@@ -338,24 +370,7 @@
                     <div class="col-lg-11">
 
                         <div class="program-content">
-                            <p>
-                                Indian Abacus Academy Tool also helps children with visual
-                                impairments immensely. Allowing them to use numbers in a
-                                more physical manner rather than only visual techniques,
-                                Abacus education benefits all children.
-                            </p>
-                            <p>
-                                Understanding number systems becomes easier through Abacus
-                                training, making mathematics less difficult and more enjoyable.
-                                Children can learn addition, subtraction, multiplication and
-                                division with confidence.
-                            </p>
-                            <p>
-                                Abacus education helps children reach their true potential,
-                                increases confidence levels and prepares them with the right
-                                skills to face today’s competitive world.
-                            </p>
-
+                            {!! $academyProgramWriteup->paragraph_2 ?? '' !!}
                         </div>
 
                     </div>
@@ -369,20 +384,13 @@
 
                         <div class="abacus-benefits">
 
+                            @if(!empty($academyProgramWriteup->bullet_points))
                             <ul>
-                                <li>Better concentration</li>
-                                <li>Memory improvement</li>
-                                <li>Quick calculation</li>
-                                <li>Develop creativity</li>
-                                <li>Confidence building</li>
-                                <li>Learning ability</li>
-                                <li>Reading and writing skills</li>
-                                <li>Visualization power</li>
-                                <li>Increase mental agility</li>
-                                <li>No need of electronic gadgets</li>
-                                <li>Efficient use of brain power</li>
+                                @foreach($academyProgramWriteup->bullet_points as $point)
+                                    <li>{{ $point }}</li>
+                                @endforeach
                             </ul>
-
+                        @endif
                         </div>
 
                     </div>
@@ -397,8 +405,13 @@
 
                         <div class="abacus-image">
 
-                            <img src="{{ asset('client/img/program/programs.jpg') }}" alt="Abacus Program">
-
+                            <div class="abacus-image">
+                                <img src="{{ !empty($academyProgramWriteup->footer_image)
+                                                ? asset($academyProgramWriteup->footer_image)
+                                                : asset('client/img/program/programs.jpg') }}"
+                                     alt="Abacus Program"
+                                     class="img-fluid">
+                            </div>
                         </div>
 
                     </div>
@@ -409,18 +422,15 @@
                         <div class="final-program-text">
 
                             <h3>
-                                DEVELOPING THE RIGHT AND LEFT BRAIN PARTS AT THE SAME TIME
+                                {!! $academyProgramWriteup->footer_title ?? '' !!}
                             </h3>
 
                             <h4>
-                                NO FEAR FROM MATHS = WHOLE BRAIN DEVELOPMENT
+                                {!! $academyProgramWriteup->footer_subtitle ?? '' !!}
                             </h4>
 
                             <p>
-                                Abacus education trains children to think faster,
-                                calculate accurately and improve their overall brain
-                                development. It strengthens concentration, memory,
-                                creativity and confidence from an early age.
+                                {!! $academyProgramWriteup->footer_description ?? '' !!}
                             </p>
 
                         </div>

@@ -24,8 +24,7 @@
 
     <!-- Metarial Iconic Font CSS
 		============================================ -->
-    <link rel="stylesheet" href="{{ asset('client/css/material-design-iconic-font.min.css')}}">
-
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
     <!-- Plugin CSS
 		============================================ -->
     <link rel="stylesheet" href="{{ asset('client/css/plugin.css') }}">
@@ -44,7 +43,7 @@
     position: fixed;
     width: 65px;
     height: 65px;
-    bottom: 25px;
+    bottom: 90px;
     right: 25px;
     background: #25D366;
     color: #fff !important;
@@ -139,8 +138,8 @@
         }
 .header-banner {
     width: 100%;
-    height: 180px;
-
+    height: 150px;
+    padding: 0px;
     background-image: url('{{ asset('client/img/banner/bgindia.jpeg') }}');
     background-size: 100% 100%;
     background-position: center;
@@ -240,6 +239,158 @@
 #nav > li > a {
     transition: all 0.3s ease;
 }
+.header-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.header-brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.academy-name {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #1F3971;
+    margin-bottom: 5px;
+}
+
+.academy-tagline {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #1F3971;
+    opacity: 0.9;
+}
+
+.header-banner-logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.header-login {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.iso-certified {
+    font-size: 16px;
+    font-weight: 600;
+    font-style: italic;
+    color: #1F3971;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    opacity: 0.95;
+}
+
+
+/* Mobile */
+@media (max-width: 767px) {
+
+    .header-brand {
+        gap: 10px;
+    }
+
+    .header-banner-logo img {
+        height: 55px !important;
+    }
+
+    .academy-name {
+        font-size: 17px;
+    }
+
+    .academy-tagline {
+        font-size: 10px;
+        max-width: 220px;
+    }
+
+    .header-login {
+        margin-left: 10px;
+    }
+}
+
+/* Remove top and bottom padding from menu */
+.header-logo-menu .mainmenu-area,
+.header-logo-menu .mainmenu,
+.header-logo-menu .mainmenu nav,
+.header-logo-menu .mainmenu ul,
+.header-logo-menu .mainmenu li,
+.header-logo-menu .mainmenu li a {
+    padding-top: 2 !important;
+    padding-bottom: 2 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Keep menu items vertically aligned */
+.header-logo-menu .mainmenu li a {
+    display: flex !important;
+    align-items: center !important;
+    height: 50px !important;
+    line-height: 50px !important;
+}
+
+/* Remove extra spacing around the list */
+.header-logo-menu .mainmenu ul {
+    margin: 0 !important;
+}
+.testimonial-rating {
+    margin-bottom: 10px;
+}
+
+.testimonial-rating i {
+    color: #FFAE27;
+    font-size: 16px;
+    margin-right: 3px;
+}
+  .social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;   /* reduced size */
+    height: 34px;  /* reduced size */
+    border-radius: 50%;
+    transition: 0.3s;
+    color: #fff;   /* white icons */
+}
+
+/* Background colors stay same */
+.social-icons .wa { background: #25D366; }
+.social-icons .fb { background: #1877F2; }
+
+/* Instagram gradient */
+.social-icons .ig {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+
+.social-icons .google { background: #DB4437; }
+.social-icons .yt { background: #FF0000; }
+
+/* SVG icon color = white */
+.social-icons svg {
+    fill: #fff;
+    width: 16px;   /* smaller icon */
+    height: 16px;  /* smaller icon */
+}
+
+.social-icons a:hover {
+    transform: translateY(-2px);
+    opacity: 0.85;
+}
     </style>
 
 </head>
@@ -268,6 +419,7 @@
             @include('client.layout.header')
             <!--End of Header Area-->
             @yield('content')
+            @include('client.layout.app-download')
             <!--End of Event Area-->
             @include('client.layout.footer')
         </div>
@@ -307,7 +459,7 @@
     <!-- LOGIN MODAL -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
 
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
             <div class="modal-content">
 
                 <!-- HEADER -->
@@ -323,15 +475,17 @@
                 <!-- BODY -->
                 <div class="modal-body text-center">
 
+                    <a href="{{ url('/student-login') }}" class="login-type-btn student-btn"
+                        onclick="closeLoginModal()">
+                        Student Login
+                    </a>
+
                     <a href="{{ url('/teacher/login') }}" class="login-type-btn teacher-btn"
                         onclick="closeLoginModal()">
                         Teacher Login
                     </a>
 
-                    <a href="{{ url('/student-login') }}" class="login-type-btn student-btn"
-                        onclick="closeLoginModal()">
-                        Student Login
-                    </a>
+
 
                     <a href="{{ url('/admin/login') }}" class="login-type-btn admin-btn" onclick="closeLoginModal()">
                         Admin Login
@@ -386,6 +540,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
     @yield('script')
     @php
     $whatsappMessage = urlencode('Hello India Abacus Academy, I would like to enquire about a demo class. Please share the details and available timings.');

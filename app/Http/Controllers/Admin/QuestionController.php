@@ -55,10 +55,12 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        \Illuminate\Support\Facades\Log::info('Question Save Request:', $request->all());
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'question_type_id'            => 'required|exists:question_types,id',
             'exam_level'                  => 'required',
-            'difficulty'                  => 'required|in:easy,medium,hard',
+            'difficulty'                  => 'nullable|in:easy,medium,hard',
             'schedule_test_type'          => 'nullable|string',
 
             'questions'                   => 'required|array|min:1',
@@ -72,6 +74,24 @@ class QuestionController extends Controller
             'questions.*.correct_option'  => 'required|in:A,B,C,D',
         ]);
 
+        $questionType = QuestionType::find($request->question_type_id);
+
+        if ($questionType && strtolower($questionType->name) === 'practice') {
+            $validator = \Illuminate\Support\Facades\Validator::make(
+                $request->all(),
+                [
+                    'difficulty' => 'required|in:easy,medium,hard',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Difficulty is required for Practice questions.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+        }
         foreach ($request->questions as $q) {
 
             Question::create([
@@ -116,7 +136,7 @@ class QuestionController extends Controller
             'correct_option'    => 'required|string',
             'exam_level'        => 'nullable|string',
             'difficulty'        => 'nullable|string',
-            
+
         ]);
 
         $question = Question::findOrFail($id);

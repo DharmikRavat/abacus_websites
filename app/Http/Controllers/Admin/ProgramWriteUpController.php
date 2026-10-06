@@ -59,15 +59,25 @@ class ProgramWriteupController extends Controller
         if ($request->hasFile('footer_image')) {
 
             // Delete old image
-            if (
-                $programWriteup->footer_image &&
-                Storage::disk('public')->exists($programWriteup->footer_image)
-            ) {
-                Storage::disk('public')->delete($programWriteup->footer_image);
+            if ($programWriteup->footer_image) {
+
+                $oldImage = public_path($programWriteup->footer_image);
+
+                if (file_exists($oldImage)) {
+                    unlink($oldImage);
+                }
             }
 
-            $data['footer_image'] = $request->file('footer_image')
-                ->store('program-writeup', 'public');
+            $file = $request->file('footer_image');
+
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(
+                public_path('program-writeup'),
+                $filename
+            );
+
+            $data['footer_image'] = 'program-writeup/' . $filename;
         }
 
         // Remove empty bullet points

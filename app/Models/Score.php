@@ -19,6 +19,7 @@ class Score extends Model
         'correct',
         'wrong',
         'skipped',
+        'is_visible',
         'time',
         'exam_level',
         'exam_mode',
@@ -26,7 +27,7 @@ class Score extends Model
         'latitude',
         'longitude',
         'schedule_test_type',
-        
+
     ];
 
     public function user()

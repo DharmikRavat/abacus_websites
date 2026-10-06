@@ -4,547 +4,326 @@
 
     <style>
         .dash {
-            padding: 30px 0 80px;
-            min-height: 100vh;
+            padding: 20px 0 35px;
+            min-height: calc(100vh - 160px);
             background: #f8fafc;
+            display: flex;
+            align-items: center;
         }
 
-        /* =========================
-                PAGE HEADER
-            ========================== */
+        .practice-wrapper {
+            max-width: 780px;
+            width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px 30px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+            border: 1px solid #eef2f6;
+        }
 
+        /* PAGE HEADER */
         .page-header {
             margin-bottom: 24px;
         }
 
-        .page-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #111827;
-            margin-bottom: 6px;
-        }
-
-        .page-subtitle {
-            color: #6b7280;
-            font-size: .95rem;
-            margin: 0;
-        }
-
-        /* =========================
-                CARD
-            ========================== */
-
-        .form-card {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(15, 23, 42, .06);
-            border: 1px solid #edf2f7;
-            overflow: hidden;
-        }
-
-        /* =========================
-                BUTTONS
-            ========================== */
-
-        .btn-submit {
-            height: 50px;
-            padding: 0 22px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
-            color: #fff !important;
-            font-weight: 700;
-            font-size: .92rem;
-            transition: .25s ease;
-            box-shadow: 0 12px 25px rgba(37, 99, 235, .18);
-            text-decoration: none;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 35px rgba(37, 99, 235, .25);
-        }
-
-        .btn-cancel {
-            height: 50px;
-            padding: 0 22px;
-            border: 1px solid #2563eb;
-            border-radius: 12px;
-            background: transparent;
-            color: #2563eb !important;
-            font-weight: 700;
-            font-size: .92rem;
-            transition: .25s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-cancel:hover {
-            background: #2563eb;
-            color: #fff !important;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(37, 99, 235, .18);
-        }
-
-        /* =========================
-                TABLE
-            ========================== */
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .student-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 0;
-        }
-
-        .student-table thead {
-            background: #f8fafc;
-        }
-
-        .student-table thead th {
-            padding: 18px 20px;
-            font-size: .82rem;
-            font-weight: 700;
-            color: #64748b;
-            border-bottom: 1px solid #e2e8f0;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-        }
-
-        .student-table tbody td {
-            padding: 18px 20px;
-            vertical-align: middle;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: .92rem;
-            color: #334155;
-        }
-
-        .student-table tbody tr {
-            transition: .2s ease;
-        }
-
-        .student-table tbody tr:hover {
-            background: #f8fbff;
-        }
-
-        /* =========================
-                PROFILE IMAGE
-            ========================== */
-
-        .student-img {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            object-fit: cover;
-            border: 3px solid #fff;
-            box-shadow: 0 5px 18px rgba(0, 0, 0, .08);
-        }
-
-        /* =========================
-                BADGES
-            ========================== */
-
-        .badge {
-            padding: 8px 14px;
-            border-radius: 30px;
-            font-size: .72rem;
-            font-weight: 700;
-        }
-
-        .bg-success {
-            background: #dcfce7 !important;
-            color: #166534 !important;
-        }
-
-        .bg-danger {
-            background: #fee2e2 !important;
-            color: #991b1b !important;
-        }
-
-        /* =========================
-                ACTION BUTTONS
-            ========================== */
-
-        .action-btn {
+        .back-arrow-btn {
             width: 38px;
             height: 38px;
             border-radius: 10px;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: .2s ease;
-            text-decoration: none;
-        }
-
-        .edit-btn {
-            border: 1px solid #2563eb;
-            color: #2563eb;
-            background: #fff;
-        }
-
-        .edit-btn:hover {
-            background: #2563eb;
-            color: #fff;
-        }
-
-        .delete-btn {
-            border: 1px solid #ef4444;
-            color: #ef4444;
-            background: #fff;
-        }
-
-        .delete-btn:hover {
-            background: #ef4444;
-            color: #fff;
-        }
-
-
-        .login-btn {
-            height: 40px;
-            padding: 0 18px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
-            color: #fff !important;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .85rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: .2s ease;
-            box-shadow: 0 8px 20px rgba(37, 99, 235, .15);
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(37, 99, 235, .25);
-        }
-        .practice-btn{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.practice-btn a{
-    margin-top: 40px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 14px 28px;
-    background: linear-gradient(135deg,#2563eb,#4f46e5);
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.5rem;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: 0.3s ease;
-    width: 100%;
-}
-
-.practice-btn a:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(37,99,235,0.25);
-}
-
-
-        /* =========================
-                EMPTY STATE
-            ========================== */
-
-        .empty-state {
-            padding: 60px 20px;
-            text-align: center;
-            
-        }
-
-        .empty-state img {
-            width: 90px;
-            margin-bottom: 16px;
-            opacity: .85;
-        }
-
-        .empty-state h6 {
+            color: #334155;
             font-size: 1rem;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 6px;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
         }
 
-        .empty-state p {
-            color: #6b7280;
+        .back-arrow-btn:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff !important;
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .page-title {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 2px;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 0.88rem;
             margin: 0;
         }
 
-        /* =========================
-                MOBILE
-            ========================== */
-
-        @media(max-width:768px) {
-
-            .dash {
-                padding: 20px 0 60px;
-            }
-
-            .page-title {
-                font-size: 1.5rem;
-            }
-
-            .student-table thead th,
-            .student-table tbody td {
-                padding: 14px;
-                font-size: .84rem;
-            }
-
-            .student-img {
-                width: 42px;
-                height: 42px;
-            }
-
-            .btn-submit {
-                width: 100%;
-                justify-content: center;
-                margin-top: 15px;
-            }
-
-        }
-
-        /* =========================
-            SECTION
-        ========================== */
-
-        .content-area {
-            padding: 35px 0 0;
-        }
-
+        /* SECTION TITLES */
         .section-title {
-            font-size: 1.9rem;
+            font-size: 1.05rem;
             font-weight: 700;
-            color: #111;
-            margin-bottom: 24px;
+            color: #1e293b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* =========================
-            MODE GRID
-        ========================== */
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: #2563eb;
+            border-radius: 4px;
+        }
 
+        .practice-section {
+            margin-bottom: 15px;
+        }
+
+        .practice-section:last-of-type {
+            margin-bottom: 18px;
+        }
+
+        /* MODE GRID */
         .mode-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-bottom: 45px;
+            gap: 12px;
         }
 
         .mode-card {
-            height: 50px;
-            border-radius: 15px;
+            height: 44px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: .25s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: #fff;
+            border: 2px solid transparent;
+            user-select: none;
         }
 
         .mode-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
+        /* EASY */
         .mode-card.easy {
-            /* background: #69c36d; */
+            border-color: #22c55e;
+            color: #16a34a;
+            background: #f0fdf4;
+        }
+        .mode-card.easy:hover {
+            background: #dcfce7;
+        }
+        .mode-card.easy.active {
+            background: #22c55e;
             color: #fff;
-            /* box-shadow: 0 10px 22px rgba(105, 195, 109, .25); */
+            border-color: #22c55e;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
         }
 
+        /* MEDIUM */
         .mode-card.medium {
-            border: 3px solid #f4b13d;
-            color: #f4b13d;
+            border-color: #f59e0b;
+            color: #d97706;
+            background: #fffbeb;
+        }
+        .mode-card.medium:hover {
+            background: #fef3c7;
+        }
+        .mode-card.medium.active {
+            background: #f59e0b;
+            color: #fff;
+            border-color: #f59e0b;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
         }
 
+        /* HARD */
         .mode-card.hard {
-            border: 3px solid #e05a5a;
-            color: #e05a5a;
+            border-color: #ef4444;
+            color: #dc2626;
+            background: #fef2f2;
+        }
+        .mode-card.hard:hover {
+            background: #fee2e2;
+        }
+        .mode-card.hard.active {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
         }
 
-        /* =========================
-            LEVEL GRID
-        ========================== */
-
+        /* LEVEL GRID - 6 columns so levels 0-10 fit in only 2 compact rows! */
         .level-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
         }
 
         .level-card {
-            height: 80px;
-            border-radius: 24px;
-            border: 3px solid #69c36d;
-            background: #fff;
+            height: 44px;
+            border-radius: 12px;
+            border: 2px solid #22c55e;
+            background: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: .25s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            user-select: none;
         }
 
         .level-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(105, 195, 109, .15);
+            transform: translateY(-2px);
+            background: #f0fdf4;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+        }
+
+        .level-card.active {
+            background: #22c55e;
+            border-color: #22c55e;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
         }
 
         .level-text {
-            font-size: 1.7rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            color: #69c36d;
+            color: #16a34a;
+            transition: color 0.2s ease;
         }
 
-        /* =========================
-            MOBILE
-        ========================== */
+        .level-card.active .level-text {
+            color: #ffffff;
+        }
 
-        @media(max-width:768px) {
+        /* DURATION GRID */
+        .duration-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
 
-            .top-header {
-                padding: 18px 16px 65px;
+        .time-card {
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2ff;
+            color: #4338ca;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .time-card:hover {
+            transform: translateY(-2px);
+            background: #e0e7ff;
+        }
+
+        .time-card.active {
+            background: #3730a3 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(55, 48, 163, 0.3);
+        }
+
+        /* PRACTICE SUBMIT BUTTON */
+        .practice-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 48px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            width: 100%;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+            letter-spacing: 0.01em;
+        }
+
+        .practice-btn a:hover:not(.disabled-btn) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+            color: #ffffff;
+        }
+
+        .disabled-btn {
+            opacity: 0.45;
+            pointer-events: none;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .dash {
+                padding: 16px 12px 25px;
+                display: block;
             }
 
-            .screen-title {
-                font-size: 1.8rem;
+            .practice-wrapper {
+                padding: 20px 16px;
+                border-radius: 16px;
             }
 
-            .hero-card {
-                border-radius: 24px;
-                padding: 28px 18px;
-            }
-
-            .hero-title {
-                font-size: 1.8rem;
-            }
-
-            .hero-subtitle {
-                font-size: .95rem;
-            }
-
-            .section-title {
-                font-size: 1.7rem;
-            }
-
-            .mode-grid {
-                gap: 14px;
-            }
-
-            .mode-card {
-                height: 82px;
-                font-size: 1.5rem;
-                border-radius: 20px;
+            .page-title {
+                font-size: 1.35rem;
             }
 
             .level-grid {
-                gap: 16px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+
+            .mode-card {
+                height: 40px;
+                font-size: 0.92rem;
             }
 
             .level-card {
-                height: 125px;
-                border-radius: 20px;
+                height: 40px;
             }
 
             .level-text {
-                font-size: 1.4rem;
-            }
-            .practice-btn a{
-                font-size: 1.rem;
+                font-size: 1.05rem;
             }
 
+            .time-card {
+                height: 38px;
+                font-size: 0.88rem;
+            }
+
+            .practice-btn a {
+                height: 44px;
+                font-size: 1rem;
+            }
         }
-    /* =========================
-    MODE CARD
-========================== */
 
-.mode-card{
-    height: 50px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: .25s ease;
-    background: #fff;
-    border: 3px solid transparent;
-}
-
-.mode-card:hover{
-    transform: translateY(-3px);
-}
-
-/* EASY */
-.mode-card.easy{
-    border-color: #69c36d;
-    color: #69c36d;
-    
-}
-
-.mode-card.easy.active{
-    background: #69c36d;
-    color: #fff;
-    box-shadow: 0 10px 22px rgba(105,195,109,.25);
-}
-
-/* MEDIUM */
-.mode-card.medium{
-    border-color: #f4b13d;
-    color: #f4b13d;
-}
-
-.mode-card.medium.active{
-    background: #f4b13d;
-    color: #fff;
-    box-shadow: 0 10px 22px rgba(244,177,61,.25);
-}
-
-/* HARD */
-.mode-card.hard{
-    border-color: #e05a5a;
-    color: #e05a5a;
-}
-
-.mode-card.hard.active{
-    background: #e05a5a;
-    color: #fff;
-    box-shadow: 0 10px 22px rgba(224,90,90,.25);
-}
-
-/* =========================
-    ACTIVE LEVEL
-========================== */
-
-.level-card.active{
-    background: #69c36d;
-    border-color: #69c36d;
-}
-
-.level-card.active .level-text{
-    color: #fff;
-}
-
-/* =========================
-    DISABLED BUTTON
-========================== */
-
-.disabled-btn{
-    opacity: .5;
-    pointer-events: none;
-    cursor: not-allowed;
-}
+        @media (max-width: 480px) {
+            .level-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
     </style>
 
 @endsection
@@ -556,64 +335,76 @@
 
         <div class="container">
 
-            {{-- PAGE HEADER --}}
-            <div class="page-header d-flex justify-content-between align-items-center flex-wrap">
-
-                <div>
-
-                    <h1 class="page-title">
-                        Start Practice
-                    </h1>
-
-                    <p class="page-subtitle">
-                        Select the appropriate level
-                    </p>
-
+                {{-- PAGE HEADER --}}
+                <div class="page-header d-flex align-items-center gap-3">
+                    <a href="{{ route('dashboard.index') }}" class="back-arrow-btn" title="Back to Dashboard">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h1 class="page-title">
+                            Start Practice
+                        </h1>
+                        <p class="page-subtitle">
+                            Select the appropriate level
+                        </p>
+                    </div>
                 </div>
 
-            </div>
+            <div class="practice-wrapper">
 
-            {{-- Grid Level --}}
-            {{-- CONTENT --}}
-            <div class="content-area">
-                <div class="container"> {{-- MODE --}}
-<div class="mb-5">
-    <h3 class="section-title">Choose Mode</h3>
+                {{-- CONTENT --}}
+                <div class="content-area">
+                    {{-- MODE --}}
+                    <div class="practice-section">
+                        <h3 class="section-title">Choose Mode</h3>
+                        <div class="mode-grid">
+                            @foreach($modes as $mode)
+                                <div class="mode-card {{ strtolower($mode->name) }}" data-mode="{{ $mode->id }}" data-name="{{ strtolower($mode->name) }}">
+                                    {{ $mode->name }}
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
 
-    <div class="mode-grid">
-        <div class="mode-card easy" data-mode="Easy">Easy</div>
-        <div class="mode-card medium" data-mode="Medium">Medium</div>
-        <div class="mode-card hard" data-mode="Hard">Hard</div>
-    </div>
-</div>
                     {{-- LEVEL --}}
-<div>
-    <h3 class="section-title">Choose Level</h3>
+                    <div class="practice-section">
+                        <h3 class="section-title">Choose Level</h3>
+                        <div class="level-grid" id="levelGrid">
+                            @foreach($levels as $level)
+                                <div class="level-card" data-level="{{ $level->id }}" data-difficulty="{{ strtolower($level->difficulty) }}" @if(strtolower($level->difficulty) !== 'easy') style="display: none;" @endif>
+                                    <div class="level-text">
+                                        {{ $level->level }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
 
-    <div class="level-grid">
-        @for($i = 0; $i <= 10; $i++)
-            <div class="level-card" data-level="{{ $i }}">
-                <div class="level-text">
-                    Level {{ $i }}
+                    {{-- DURATION --}}
+                    <div class="practice-section">
+                        <h3 class="section-title">Choose Duration</h3>
+                        <div class="duration-grid" id="durationGrid">
+                            @foreach($durations as $duration)
+                                <div class="time-card" data-time="{{ $duration->duration_minutes }}">
+                                    {{ $duration->duration_minutes }} Minutes
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
-            </div>
-        @endfor
-    </div>
-</div>
-                </div>
-            </div>
 
-            {{-- Next Button  --}}
-<div class="practice-btn">
-    <a href="javascript:void(0)" id="startPracticeBtn" class="disabled-btn">
-        Start Practice
-    </a>
-</div>
+                {{-- Next Button --}}
+                <div class="practice-btn">
+                    <a href="javascript:void(0)" id="startPracticeBtn" class="disabled-btn">
+                        Start Practice
+                    </a>
+                </div>
+
+            </div>
 
         </div>
 
     </div>
-
 
 @endsection
 
@@ -621,20 +412,35 @@
 
 @section('script')
 
-   
 <script>
 
     let selectedMode = '';
+    let selectedModeName = '';
     let selectedLevel = '';
+    let selectedTime = '';
 
     // SELECT MODE
     $('.mode-card').on('click', function () {
 
         $('.mode-card').removeClass('active');
-
         $(this).addClass('active');
 
         selectedMode = $(this).data('mode');
+        selectedModeName = $(this).data('name');
+
+        // Reset level selection
+        $('.level-card').removeClass('active');
+        selectedLevel = '';
+
+        // Reset time selection
+        $('.time-card').removeClass('active');
+        selectedTime = '';
+
+        // Hide all levels first
+        $('.level-card').hide();
+
+        // Show only the levels matching the selected mode
+        $('.level-card[data-difficulty="'+selectedModeName+'"]').show();
 
         checkSelection();
 
@@ -644,26 +450,35 @@
     $('.level-card').on('click', function () {
 
         $('.level-card').removeClass('active');
-
         $(this).addClass('active');
 
         selectedLevel = $(this).data('level');
+
+        // Reset time selection
+        $('.time-card').removeClass('active');
+        selectedTime = '';
 
         checkSelection();
 
     });
 
-    // ENABLE BUTTON IF BOTH SELECTED
+    // SELECT TIME
+    $('.time-card').on('click', function () {
+        $('.time-card').removeClass('active');
+        $(this).addClass('active');
+
+        selectedTime = $(this).data('time');
+
+        checkSelection();
+    });
+
+    // ENABLE BUTTON IF ALL SELECTED
     function checkSelection() {
 
-        if (selectedMode !== '' && selectedLevel !== '') {
-
+        if (selectedMode !== '' && selectedLevel !== '' && selectedTime !== '') {
             $('#startPracticeBtn').removeClass('disabled-btn');
-
         } else {
-
             $('#startPracticeBtn').addClass('disabled-btn');
-
         }
 
     }
@@ -671,22 +486,13 @@
     // START PRACTICE CLICK
     $('#startPracticeBtn').on('click', function () {
 
-        if (selectedMode === '' || selectedLevel === '') {
-
-            alert('Please select Mode and Level');
-
+        if (selectedMode === '' || selectedLevel === '' || selectedTime === '') {
+            alert('Please select Mode, Level, and Duration');
             return;
-
         }
 
-        alert(
-            'Mode: ' + selectedMode +
-            '\nLevel: ' + selectedLevel
-        );
-        window.location.href = "/exam-sheet";
-
-        // Example redirect
-        // window.location.href = "/practice?mode=" + selectedMode + "&level=" + selectedLevel;
+        // Redirect with query parameters
+        window.location.href = "/exam-sheet?mode=" + selectedMode + "&level=" + selectedLevel + "&time=" + selectedTime;
 
     });
 

@@ -41,13 +41,23 @@
          Hero Slider Active
     ------------------------------*/
     $('.hero-slider').owlCarousel({
+        items: 1,
         smartSpeed: 1000,
         nav: true,
         loop: true,
+
         animateOut: 'fadeOut',
         animateIn: 'fadeIn',
-        autoplay: false,
-        navText: ['<i class="fa-solid fa-chevron-left"></i>', '<i class="fa-solid fa-chevron-right"></i>'],
+
+        autoplay: true,
+        autoplayTimeout: 4000,
+        autoplayHoverPause: false,
+
+        navText: [
+            '<i class="fa-solid fa-chevron-left"></i>',
+            '<i class="fa-solid fa-chevron-right"></i>'
+        ],
+
         responsive: {
             0: {
                 items: 1,
@@ -55,15 +65,17 @@
                 nav: false
             },
             600: {
-                items: 1
+                items: 1,
+                autoplay: true
             },
             1000: {
-                items: 1
+                items: 1,
+                autoplay: true
             }
         }
-    })
-    /*------- 
-        Testimonial Slider Active 
+    });
+    /*-------
+        Testimonial Slider Active
     ----------------------------------*/
     $('.testimonial-slider').owlCarousel({
         smartSpeed: 1000,
@@ -87,8 +99,8 @@
             }
         }
     })
-    /*------- 
-        Testimonial Slider Active 
+    /*-------
+        Testimonial Slider Active
     ----------------------------------*/
     $('.testimonial-slider-2').owlCarousel({
         smartSpeed: 1000,
@@ -198,7 +210,7 @@
             $('.mailchimp-error').html('' + resp.msg).fadeIn(900);
         }
     }
-    /*------------------------------ 
+    /*------------------------------
     10. Cart Plus Minus Button
     ---------------------------------*/
     $(".cart-plus-minus").append('<div class="dec qtybutton"><i class="zmdi zmdi-chevron-down"></i></div><div class="inc qtybutton"><i class="zmdi zmdi-chevron-up"></i></div>');
@@ -217,8 +229,8 @@
         }
         $button.parent().find("input").val(newVal);
     });
-    /*----------------------------------- 
-        Single Product Side Menu Active 
+    /*-----------------------------------
+        Single Product Side Menu Active
     --------------------------------------*/
     $('.single-slide-menu').slick({
         prevArrow: '<i class="fa fa-angle-left"></i>',
@@ -260,7 +272,7 @@
         $('.product-details-large ' + $href).addClass('active show');
 
     })
-    /*------------------------------ 
+    /*------------------------------
         Toggle Function Active
     ---------------------------------*/
     /*--- showlogin toggle function ----*/
@@ -292,7 +304,7 @@
         hash: false,
     });
     /*----------------------------------
-    	 Instafeed active 
+     Instafeed active
     ------------------------------------*/
     if ($('#Instafeed').length) {
         var feed = new Instafeed({

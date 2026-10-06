@@ -20,6 +20,31 @@
         margin-bottom: 24px;
     }
 
+    .back-arrow-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #334155;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+        flex-shrink: 0;
+    }
+
+    .back-arrow-btn:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff !important;
+        transform: translateX(-3px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
     .page-title{
         font-size: 2rem;
         font-weight: 800;
@@ -246,26 +271,37 @@
 <div class="container">
 
     {{-- PAGE HEADER --}}
-    <div class="page-header">
+    <div class="page-header d-flex align-items-center gap-3">
+        <a href="{{ route('choose-user') }}" class="back-arrow-btn" title="Back to Students">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+        <div>
+            <h1 class="page-title">
+                Add New Student
+            </h1>
 
-        <h1 class="page-title">
-            Add New Student
-        </h1>
-
-        <p class="page-subtitle">
-            Create a new student profile and manage admissions easily.
-        </p>
-
+            <p class="page-subtitle">
+                Create a new student profile and manage admissions easily.
+            </p>
+        </div>
     </div>
 
     {{-- FORM CARD --}}
-    @if(session('success'))
+    @if ($errors->any())
+        <div class="alert alert-danger mb-3" style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 10px; border: 1px solid #fecaca;">
+            <ul style="margin: 0; padding-left: 20px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <div class="alert alert-success mb-3">
+    @if(session('success'))
+    <div class="alert alert-success mb-3" style="background: #dcfce7; color: #166534; padding: 15px; border-radius: 10px; border: 1px solid #bbf7d0;">
         {{ session('success') }}
     </div>
-
-@endif
+    @endif
     <div class="form-card">
 
 <form action="{{ route('store-user') }}"
@@ -317,6 +353,26 @@
                                name="name"
                                class="form-control"
                                placeholder="Enter full name"
+                               required>
+
+                    </div>
+
+                </div>
+
+                {{-- ENROLLMENT NO --}}
+                <div class="col-md-6">
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Enrollment No <span class="required">*</span>
+                        </label>
+
+                        <input type="text"
+                               name="student_enrollment_id"
+                               class="form-control"
+                               value="{{ $nextEnrollmentId ?? '' }}"
+                               readonly
                                required>
 
                     </div>
